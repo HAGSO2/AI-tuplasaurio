@@ -11,7 +11,7 @@ public class NPC : MonoBehaviour
     private RaycastHit _toPlayer;
     private List<NPC> _nearNpCs;
     private float _heatCrumbs; // At the time og making a heat map...
-    //private float _maxDist; // Will be used in skeletons
+    public float maxDist; // Will be used in skeletons
     private float _vel = 1.5f; // Velocity max magnitude
     private Vector3 _movDir;
     public bool Alarmed { get; private set; }
@@ -36,10 +36,15 @@ public class NPC : MonoBehaviour
         }
     }
 
-    private void set_Orientation(Vector3 looking, float time)
+    private void set_Orientation(Vector3 looking, float time)// Turns the NPC to the point
     {
         Vector3 desired = looking - transform.position;
         transform.forward = Vector3.Lerp(transform.forward, desired.normalized, time);
+    }
+
+    private bool is_Contact(Vector3 looking) //Returns true if the NPC can see the poitn at a max distance
+    {
+        return Physics.Raycast(transform.position, (looking - transform.position),maxDist);
     }
     // Start is called before the first frame update
     void Start()

@@ -157,6 +157,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 195078468}
+  maxDist: 10
 --- !u!54 &183446822
 Rigidbody:
   m_ObjectHideFlags: 0
