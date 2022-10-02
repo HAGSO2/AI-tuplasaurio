@@ -6,7 +6,7 @@ public class SimplePlayerMovement : MonoBehaviour
 {
 
     private Rigidbody rb;
-    private float movementSpeed = 20f;
+    private float movementSpeed = 10f;
 
     // Start is called before the first frame update
     void Start()
