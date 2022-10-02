@@ -36,7 +36,7 @@ public class HeatPoint : MonoBehaviour
             heat = 1.5f;
         }
 
-        if (other.transform.CompareTag("NPC"))
+        /*if (other.transform.CompareTag("NPC"))
         {
             NPC info = other.GetComponent<NPC>();
             if (!KnownNPC[info.id])
@@ -44,9 +44,9 @@ public class HeatPoint : MonoBehaviour
                 KnownNPC[info.id] = true;
                 info.EnqueuePos(this);
             }
-        }
+        }*/
     }
-
+/*
     private void OnTriggerExit(Collider other)
     {
         if (other.transform.CompareTag("NPC"))
@@ -54,4 +54,5 @@ public class HeatPoint : MonoBehaviour
             KnownNPC[other.GetComponent<NPC>().id] = false;
         }
     }
+*/
 }

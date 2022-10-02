@@ -50,10 +50,13 @@ public class NPC : MonoBehaviour
         return Physics.Raycast(transform.position, (looking - transform.position),maxDist);
     }
     // Start is called before the first frame update
+
+    public HeatPoint TempStarter;
     void Start()
     {
         _body = gameObject.GetComponent<Rigidbody>();
         PendingPositions = new Queue<Vector3>();
+        EnqueuePos(TempStarter);
     }
 
     // Update is called once per frame
@@ -64,9 +67,10 @@ public class NPC : MonoBehaviour
     }
     public void EnqueuePos(HeatPoint Crumb)
     {
-        PendingPositions.Enqueue(Crumb.transform.position);
-        StartCoroutine(GetTo(Crumb.transform.position));
-        StartCoroutine(SearchHeat(Crumb,0));
+        var position = Crumb.transform.position;
+        SearchHeat(Crumb);
+        PendingPositions.Enqueue(position);
+        StartCoroutine(GetTo(position));
     }
 
     private IEnumerator GetTo(Vector3 position)
@@ -75,13 +79,13 @@ public class NPC : MonoBehaviour
         yield return new WaitUntil(() => _body.velocity.magnitude < 5);
         if ((transform.position - position).magnitude > 0.2f)
             StartCoroutine(GetTo(position));
-        else if (PendingPositions.Count > 0)
+        else if (PendingPositions.Count > 1)
         {
             PendingPositions.Dequeue();
             StartCoroutine(GetTo(PendingPositions.Peek()));
         }
     }
-
+/*
     private IEnumerator SearchHeat(HeatPoint Crumb, float time)
     {
         Debug.Log(Crumb.gameObject.name);
@@ -107,6 +111,29 @@ public class NPC : MonoBehaviour
             PendingPositions.Enqueue(Crumb.Conections[hottest].transform.position);
             time += Time.deltaTime;
             StartCoroutine(SearchHeat(Crumb.Conections[hottest],time));
+        }
+    }*/
+    private void SearchHeat(HeatPoint crumb)
+    {
+        if (crumb.Conections.Length == 0)
+            return;
+            
+        float maxHeat = 0;
+        int hottest = 0;
+        for (int i = 0; i < crumb.Conections.Length; i++)
+        {
+            if (crumb.Conections[i].heat > maxHeat)
+            {
+                hottest = i;
+                maxHeat = crumb.Conections[i].heat;
+            }
+        }
+        if (maxHeat > 0)
+        {
+            crumb.Conections[hottest].KnownNPC[id] = true;
+            Debug.Log(crumb.Conections[hottest].transform.name);
+            PendingPositions.Enqueue(crumb.Conections[hottest].transform.position);
+            SearchHeat(crumb.Conections[hottest]);
         }
     }
 
