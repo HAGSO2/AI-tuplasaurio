@@ -1169,9 +1169,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 02ab085ac296e1843978461711b639b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Conections:
-  - {fileID: 597202850}
-  - {fileID: 765508318}
+  Conections: []
   heat: 1
   KnownNPC: 00
 --- !u!65 &765508319
