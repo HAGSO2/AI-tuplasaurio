@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,6 +7,7 @@ using UnityEngine.Serialization;
 [RequireComponent(typeof(Rigidbody))]
 public class NPC : MonoBehaviour
 {
+    public int id = 0;
     public Transform player;
     private Rigidbody _body;
     private RaycastHit _toPlayer;
@@ -14,6 +16,7 @@ public class NPC : MonoBehaviour
     public float maxDist; // Will be used in skeletons
     private float _vel = 1.5f; // Velocity max magnitude
     private Vector3 _movDir;
+    private Queue<Vector3> PendingPositions;
     public bool Alarmed { get; private set; }
 
     private void set_speed(Vector3 runnigAt)
@@ -50,13 +53,68 @@ public class NPC : MonoBehaviour
     void Start()
     {
         _body = gameObject.GetComponent<Rigidbody>();
-        
+        PendingPositions = new Queue<Vector3>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        set_Orientation(player.position,Time.deltaTime);
-        set_speed(player.position);
+        /*set_Orientation(player.position,Time.deltaTime);
+        set_speed(player.position);*/
+    }
+    public void EnqueuePos(HeatPoint Crumb)
+    {
+        PendingPositions.Enqueue(Crumb.transform.position);
+        StartCoroutine(GetTo(Crumb.transform.position));
+        StartCoroutine(SearchHeat(Crumb,0));
+    }
+
+    private IEnumerator GetTo(Vector3 position)
+    {
+        set_speed(position);
+        yield return new WaitUntil(() => _body.velocity.magnitude < 5);
+        if ((transform.position - position).magnitude > 0.2f)
+            StartCoroutine(GetTo(position));
+        else if (PendingPositions.Count > 0)
+        {
+            PendingPositions.Dequeue();
+            StartCoroutine(GetTo(PendingPositions.Peek()));
+        }
+    }
+
+    private IEnumerator SearchHeat(HeatPoint Crumb, float time)
+    {
+        Debug.Log(Crumb.gameObject.name);
+        if(Crumb.Conections.Length == 0)
+            yield break;
+        if (time > 5)
+        {
+            time = 0;
+            yield return new WaitForEndOfFrame();
+        }
+        float maxHeat = 0;
+        int hottest = 0;
+        for (int i = 1; i < Crumb.Conections.Length; i++)
+        {
+            if (Crumb.Conections[i].heat > maxHeat)
+                hottest = i;
+        }
+
+        Debug.Log("Hottest: " + Crumb.Conections[hottest].gameObject.name);
+        if (maxHeat > 0)
+        {
+            Crumb.Conections[hottest].KnownNPC[id] = true;
+            PendingPositions.Enqueue(Crumb.Conections[hottest].transform.position);
+            time += Time.deltaTime;
+            StartCoroutine(SearchHeat(Crumb.Conections[hottest],time));
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("HeatCrumb"))
+        {
+            PendingPositions.Dequeue();
+        }
     }
 }
