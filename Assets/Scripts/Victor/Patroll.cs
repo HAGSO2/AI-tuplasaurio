@@ -8,56 +8,70 @@ public class Patroll : MonoBehaviour
 
     int n_waypoint;
     bool forward;
-    bool playerIsInFront;
+    //bool playerIsInFront;
     Rigidbody rb;
     // Start is called before the first frame update
     void Start()
     {
         forward = true;
         rb = GetComponent<Rigidbody>();
-        MoveToWaypoint(waypoints[0]);
+
+        waypoints[n_waypoint].gameObject.SetActive(true);
+        MoveTo(waypoints[0]);
     }
 
     // Update is called once per frame
     void Update()
     {
-        Debug.Log(n_waypoint);
+        //Debug.Log(n_waypoint);
     }
 
     private void FixedUpdate()
     {
-        MoveToWaypoint(waypoints[n_waypoint]);
-
-        RotateMainModel(waypoints[n_waypoint]);
+        Patrolling();
     }
 
-    private void MoveToWaypoint(Transform waypoint)
+    private void Patrolling()
+    {
+        MoveTo(waypoints[n_waypoint]);
+
+        Rotate(waypoints[n_waypoint]);
+    }
+
+    private void MoveTo(Transform waypoint)
     {
         Vector3 direction = waypoint.position - transform.position;
 
         direction.Normalize();
 
-        rb.MovePosition(transform.position + direction * Time.deltaTime * 5f);
+        rb.MovePosition(transform.position + direction * Time.fixedDeltaTime * 2f);
     }
 
-    private void RotateMainModel(Transform waypoint)
+    private void Rotate(Transform waypoint)
     {
         if (rb.velocity != Vector3.zero)
         {
-            Vector3 direction = waypoint.position - transform.position;
+            Vector3 goal = new Vector3(waypoint.position.x, transform.position.y, waypoint.position.z);
 
+            Vector3 direction = goal - transform.position;
             direction.Normalize();
-            Quaternion toRotation = Quaternion.LookRotation(direction, Vector3.up);
 
-            rb.MoveRotation(Quaternion.RotateTowards(transform.rotation, toRotation, 100f * Time.deltaTime));
+            float turnSpeed = 25f;
+
+            Vector3 desiredForward = Vector3.RotateTowards(transform.forward, direction, turnSpeed * Time.fixedDeltaTime, 0f);
+
+            rb.MoveRotation(Quaternion.LookRotation(desiredForward));
         }
     }
 
     private void OnTriggerEnter(Collider other)
     {
         // When reaching a waypoint move to the next or the previous waypoint
+        // Also deactivates the used waypoint and activates the next waypoint
         if (other.CompareTag("Waypoint"))
         {
+            waypoints[n_waypoint].gameObject.SetActive(false);
+
             if (n_waypoint + 1 == waypoints.Length)
                 forward = false;
             else if (n_waypoint - 1 < 0)
@@ -67,6 +81,8 @@ public class Patroll : MonoBehaviour
                 n_waypoint--;
             else
                 n_waypoint++;
+
+            waypoints[n_waypoint].gameObject.SetActive(true);
         }
     }
     /*
