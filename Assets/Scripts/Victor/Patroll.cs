@@ -4,17 +4,28 @@ using UnityEngine;
 
 public class Patroll : MonoBehaviour
 {
-    public Transform[] waypoints;
 
-    int n_waypoint;
-    bool forward;
+    [SerializeField]
+    private Transform waypointContainer;
+
+    private Transform[] waypoints;
+
+    private int n_waypoint;
+    private bool forward;
     //bool playerIsInFront;
-    Rigidbody rb;
+    private Rigidbody rb;
     // Start is called before the first frame update
     void Start()
     {
         forward = true;
         rb = GetComponent<Rigidbody>();
+
+        waypoints = new Transform[waypointContainer.childCount];
+
+        for (int i = 0; i < waypointContainer.childCount; i++)
+        {
+            waypoints[i] = waypointContainer.GetChild(i);
+        }
 
         waypoints[n_waypoint].gameObject.SetActive(true);
         MoveTo(waypoints[0]);
