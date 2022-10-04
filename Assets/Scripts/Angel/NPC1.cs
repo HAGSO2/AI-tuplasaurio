@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.Serialization;
 
 [RequireComponent(typeof(Rigidbody))]
-public class NPC : MonoBehaviour
+public class NPC1 : MonoBehaviour
 {
     //public int id = 0;
     public Transform player;
