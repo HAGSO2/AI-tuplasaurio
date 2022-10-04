@@ -7,26 +7,29 @@ using UnityEngine.Serialization;
 [RequireComponent(typeof(Rigidbody))]
 public class NPC : MonoBehaviour
 {
-    public int id = 0;
+    //public int id = 0;
     public Transform player;
     private Rigidbody _body;
     private RaycastHit _toPlayer;
-    private List<NPC> _nearNpCs;
-    private float _heatCrumbs; // At the time og making a heat map...
-    public float maxDist; // Will be used in skeletons
+    
+    //private List<NPC> _nearNpCs;
+    //private float _heatCrumbs; // At the time og making a heat map...
+    //public float maxDist; // Will be used in skeletons
     private float _vel = 1.5f; // Velocity max magnitude
     private Vector3 _movDir;
-    private Queue<Vector3> PendingPositions;
-    public bool Alarmed { get; private set; }
+    
+    //private Queue<Vector3> PendingPositions;
+    //public bool Alarmed { get; private set; }
 
     private void set_speed(Vector3 runnigAt)
     {
         //Changes speed direction to go to the runningPoint
 
-        Vector3 desired = runnigAt - transform.position;
+        Vector3 position = transform.position;
+        Vector3 desired = runnigAt - position;
         Vector3 steering = desired - _body.velocity;
-        Debug.DrawLine(transform.position,player.position,Color.black);
-        Debug.DrawRay(transform.position,steering.normalized * _vel);
+        Debug.DrawLine(position,player.position,Color.black);
+        Debug.DrawRay(position,steering.normalized * _vel);
         steering.Normalize();
         if(Vector3.Angle(desired,steering) < 30 || (transform.position - runnigAt).magnitude > 10)
         {
@@ -47,24 +50,25 @@ public class NPC : MonoBehaviour
 
     private bool is_Contact(Vector3 looking) //Returns true if the NPC can see the poitn at a max distance
     {
-        return Physics.Raycast(transform.position, (looking - transform.position),maxDist);
+        return Physics.Raycast(transform.position, (looking - transform.position));
     }
     // Start is called before the first frame update
 
-    public HeatPoint TempStarter;
+    //public HeatPoint TempStarter;
     void Start()
     {
         _body = gameObject.GetComponent<Rigidbody>();
-        PendingPositions = new Queue<Vector3>();
-        EnqueuePos(TempStarter);
+        //PendingPositions = new Queue<Vector3>();
+        //EnqueuePos(TempStarter);
     }
 
     // Update is called once per frame
     void Update()
     {
-        /*set_Orientation(player.position,Time.deltaTime);
-        set_speed(player.position);*/
+        set_Orientation(player.position,Time.deltaTime);
+        set_speed(player.position);
     }
+    /*
     public void EnqueuePos(HeatPoint Crumb)
     {
         var position = Crumb.transform.position;
@@ -85,7 +89,7 @@ public class NPC : MonoBehaviour
             StartCoroutine(GetTo(PendingPositions.Peek()));
         }
     }
-/*
+
     private IEnumerator SearchHeat(HeatPoint Crumb, float time)
     {
         Debug.Log(Crumb.gameObject.name);
@@ -112,7 +116,7 @@ public class NPC : MonoBehaviour
             time += Time.deltaTime;
             StartCoroutine(SearchHeat(Crumb.Conections[hottest],time));
         }
-    }*/
+    }
     private void SearchHeat(HeatPoint crumb)
     {
         if (crumb.Conections.Length == 0)
@@ -143,5 +147,5 @@ public class NPC : MonoBehaviour
         {
             PendingPositions.Dequeue();
         }
-    }
+    }*/
 }
