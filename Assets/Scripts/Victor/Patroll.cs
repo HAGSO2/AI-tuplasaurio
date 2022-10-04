@@ -38,7 +38,6 @@ public class Patroll : MonoBehaviour
         }
 
         waypoints[n_waypoint].gameObject.SetActive(true);
-        MoveTo();
     }
 
     void Update()
@@ -71,7 +70,7 @@ public class Patroll : MonoBehaviour
     private void MoveTo()
     {
         if (DistanceLessThan(0.75f))
-            movementSpeed = 1;
+            movementSpeed = Random.Range(0.8f, 1f);
         else
             movementSpeed = 2;
 
