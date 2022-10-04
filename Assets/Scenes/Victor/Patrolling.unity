@@ -640,6 +640,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: JohnLemon
       objectReference: {fileID: 0}
+    - target: {fileID: 8593400155575843310, guid: 20acd1a474e02a14a86e818545d603ea, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8593400155576067534, guid: 20acd1a474e02a14a86e818545d603ea, type: 3}
       propertyPath: m_RootOrder
       value: 3
@@ -800,6 +804,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   waypointContainer: {fileID: 1719936314}
+  movementSpeed: 2
+  turnSpeed: 10
+  stoppedMaxTime: 2
 --- !u!54 &1880036174
 Rigidbody:
   m_ObjectHideFlags: 0

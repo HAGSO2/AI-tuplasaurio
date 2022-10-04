@@ -4,20 +4,30 @@ using UnityEngine;
 
 public class Patroll : MonoBehaviour
 {
-
     [SerializeField]
     private Transform waypointContainer;
-
     private Transform[] waypoints;
-
     private int n_waypoint;
-    private bool forward;
-    //bool playerIsInFront;
+
+    [SerializeField]
+    private float movementSpeed;
+    [SerializeField]
+    private float turnSpeed;
+
+    private bool movingForward;
+    private bool stopped;
+
+    private float stoppedTimer;
+    [SerializeField]
+    private float stoppedMaxTime;
+
     private Rigidbody rb;
-    // Start is called before the first frame update
     void Start()
     {
-        forward = true;
+        stoppedTimer = 0;
+
+        stopped = false;
+        movingForward = true;
         rb = GetComponent<Rigidbody>();
 
         waypoints = new Transform[waypointContainer.childCount];
@@ -28,10 +38,9 @@ public class Patroll : MonoBehaviour
         }
 
         waypoints[n_waypoint].gameObject.SetActive(true);
-        MoveTo(waypoints[0]);
+        MoveTo();
     }
 
-    // Update is called once per frame
     void Update()
     {
         //Debug.Log(n_waypoint);
@@ -44,18 +53,34 @@ public class Patroll : MonoBehaviour
 
     private void Patrolling()
     {
-        MoveTo(waypoints[n_waypoint]);
+        if (!stopped)
+        {
+            MoveTo();
 
-        Rotate(waypoints[n_waypoint]);
+            Rotate(waypoints[n_waypoint]);
+
+        }
+        else
+        {
+            stoppedTimer += Time.deltaTime;
+            if (stoppedTimer >= stoppedMaxTime)
+                stopped = false;
+        }
     }
 
-    private void MoveTo(Transform waypoint)
+    private void MoveTo()
     {
-        Vector3 direction = waypoint.position - transform.position;
+        if (DistanceLessThan(0.75f))
+            movementSpeed = 1;
+        else
+            movementSpeed = 2;
 
-        direction.Normalize();
+        rb.MovePosition(transform.position + transform.forward * Time.fixedDeltaTime * movementSpeed);
+    }
 
-        rb.MovePosition(transform.position + direction * Time.fixedDeltaTime * 2f);
+    private bool DistanceLessThan(float distance)
+    {
+        return Vector3.Distance(waypoints[n_waypoint].position, transform.position) < distance;
     }
 
     private void Rotate(Transform waypoint)
@@ -66,8 +91,6 @@ public class Patroll : MonoBehaviour
 
             Vector3 direction = goal - transform.position;
             direction.Normalize();
-
-            float turnSpeed = 25f;
 
             Vector3 desiredForward = Vector3.RotateTowards(transform.forward, direction, turnSpeed * Time.fixedDeltaTime, 0f);
 
@@ -84,16 +107,20 @@ public class Patroll : MonoBehaviour
             waypoints[n_waypoint].gameObject.SetActive(false);
 
             if (n_waypoint + 1 == waypoints.Length)
-                forward = false;
+                movingForward = false;
             else if (n_waypoint - 1 < 0)
-                forward = true;
+                movingForward = true;
 
-            if (!forward)
+            if (!movingForward)
                 n_waypoint--;
             else
                 n_waypoint++;
 
             waypoints[n_waypoint].gameObject.SetActive(true);
+
+            float randomNumber = Random.Range(0f, 1f);
+            if (randomNumber > 0.7f)
+                stopped = true;
         }
     }
     /*
