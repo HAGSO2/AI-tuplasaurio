@@ -7,19 +7,11 @@ using UnityEngine.Serialization;
 [RequireComponent(typeof(Rigidbody))]
 public class NPC1 : MonoBehaviour
 {
-    enum Direc
-    {
-        Forward,
-        Backward,
-        Right,
-        Left,
-        Unknow
-    }
     //public int id = 0;
     public Transform player;
     private Rigidbody _body;
     private RaycastHit _toPlayer;
-    private Direc Remember;
+    private HeatDir Remember;
     
     //private List<NPC> _nearNpCs;
     //private float _heatCrumbs; // At the time og making a heat map...
@@ -67,6 +59,7 @@ public class NPC1 : MonoBehaviour
     void Start()
     {
         _body = gameObject.GetComponent<Rigidbody>();
+        Remember = new HeatDir(HeatDir.Dir.Unknow);
         //StartCoroutine(GetTo(player.position, true));
         //PendingPositions = new Queue<Vector3>();
         //EnqueuePos(TempStarter);
