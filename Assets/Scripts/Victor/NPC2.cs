@@ -9,7 +9,7 @@ public class NPC2 : MonoBehaviour
     public Transform player;
     private Rigidbody _body;
     private RaycastHit _toPlayer;
-    private List<NPC> _nearNpCs;
+    private List<NPC1> _nearNpCs;
     private float _heatCrumbs; // At the time og making a heat map...
     public float maxDist; // Will be used in skeletons
     private float _vel = 1.5f; // Velocity max magnitude

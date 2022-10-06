@@ -7,10 +7,19 @@ using UnityEngine.Serialization;
 [RequireComponent(typeof(Rigidbody))]
 public class NPC1 : MonoBehaviour
 {
+    enum Direc
+    {
+        Forward,
+        Backward,
+        Right,
+        Left,
+        Unknow
+    }
     //public int id = 0;
     public Transform player;
     private Rigidbody _body;
     private RaycastHit _toPlayer;
+    private Direc Remember;
     
     //private List<NPC> _nearNpCs;
     //private float _heatCrumbs; // At the time og making a heat map...
@@ -21,7 +30,7 @@ public class NPC1 : MonoBehaviour
     //private Queue<Vector3> PendingPositions;
     //public bool Alarmed { get; private set; }
 
-    private void set_speed(Vector3 runnigAt)
+    private void set_speed(Vector3 runnigAt, bool stop)
     {
         //Changes speed direction to go to the runningPoint
 
@@ -31,7 +40,7 @@ public class NPC1 : MonoBehaviour
         Debug.DrawLine(position,player.position,Color.black);
         Debug.DrawRay(position,steering.normalized * _vel);
         steering.Normalize();
-        if(Vector3.Angle(desired,steering) < 30 || (transform.position - runnigAt).magnitude > 10)
+        if (Vector3.Angle(desired, steering) < 30 || stop)
         {
             _movDir = steering;
             _body.AddForce(steering * _vel);
@@ -58,6 +67,7 @@ public class NPC1 : MonoBehaviour
     void Start()
     {
         _body = gameObject.GetComponent<Rigidbody>();
+        //StartCoroutine(GetTo(player.position, true));
         //PendingPositions = new Queue<Vector3>();
         //EnqueuePos(TempStarter);
     }
@@ -66,7 +76,22 @@ public class NPC1 : MonoBehaviour
     void Update()
     {
         set_Orientation(player.position,Time.deltaTime);
-        set_speed(player.position);
+        //Sets speed and stops at the point
+        //set_speed(player.position,(transform.position - player.position).magnitude < 10);
+        //Sets speed and does not stop
+        //set_speed(player.position,false);
+    }
+
+    void Chase()
+    {
+        
+    }
+    private IEnumerator GetTo(Vector3 position, bool stop)
+    {
+        set_speed(position,stop);
+        yield return new WaitUntil(() => _body.velocity.magnitude < 5);
+        if ((transform.position - position).magnitude > 0.2f)
+            StartCoroutine(GetTo(position,stop));
     }
     /*
     public void EnqueuePos(HeatPoint Crumb)
@@ -77,18 +102,7 @@ public class NPC1 : MonoBehaviour
         StartCoroutine(GetTo(position));
     }
 
-    private IEnumerator GetTo(Vector3 position)
-    {
-        set_speed(position);
-        yield return new WaitUntil(() => _body.velocity.magnitude < 5);
-        if ((transform.position - position).magnitude > 0.2f)
-            StartCoroutine(GetTo(position));
-        else if (PendingPositions.Count > 1)
-        {
-            PendingPositions.Dequeue();
-            StartCoroutine(GetTo(PendingPositions.Peek()));
-        }
-    }
+    
 
     private IEnumerator SearchHeat(HeatPoint Crumb, float time)
     {

@@ -2,57 +2,21 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class HeatPoint : MonoBehaviour
 {
-    static public float heatLoss = 0.01f;
     public HeatPoint[] Conections;
-    public float heat;
-    public bool[] KnownNPC;
+    private HeatDir[] _dirs;
 
-    // Start is called before the first frame update
-    void Start()
+    public Vector3 RNext(HeatDir previous)
     {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        Vector3 offset = Vector3.up;
-        foreach (HeatPoint p in Conections)
+        int i = Random.Range(0, Conections.Length);
+        while (_dirs[i] != previous)
         {
-            Debug.DrawLine(transform.position + offset, p.transform.position + offset,
-                Color.Lerp(Color.blue, Color.red, heat - p.heat));
-            offset += Vector3.up;
-        }
-        //heat -= heat > 0 ? Time.deltaTime * heatLoss : 0;
-    }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.transform.CompareTag("Player"))
-        {
-            heat = 1.5f;
+            i = Random.Range(0, Conections.Length);
         }
 
-        /*if (other.transform.CompareTag("NPC"))
-        {
-            NPC info = other.GetComponent<NPC>();
-            if (!KnownNPC[info.id])
-            {
-                KnownNPC[info.id] = true;
-                info.EnqueuePos(this);
-            }
-        }*/
+        return Conections[i].transform.position;
     }
-/*
-    private void OnTriggerExit(Collider other)
-    {
-        if (other.transform.CompareTag("NPC"))
-        {
-            KnownNPC[other.GetComponent<NPC>().id] = false;
-        }
-    }
-*/
 }
