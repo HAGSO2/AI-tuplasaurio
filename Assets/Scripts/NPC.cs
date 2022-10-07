@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 [RequireComponent(typeof(Rigidbody))]
 public class NPC : MonoBehaviour
@@ -9,6 +10,7 @@ public class NPC : MonoBehaviour
     [SerializeField] private Transform waypointContainer;
     private Transform[] _waypoints;
     private int n_waypoint;
+    public Observer obs;
 
     [SerializeField]
     private float movementSpeed;
@@ -46,18 +48,9 @@ public class NPC : MonoBehaviour
     private bool isPatrolling = true;
     private bool isInvestigating = false;
     private bool isChasing = false;
-    // Start is called before the first frame update
 
-    /*void MoveTo(Vector3 target)
-    {
-        transform.position = Vector3.Lerp(transform.position, target, Time.deltaTime * turnSpeed);
-    }*/
-    
 
-    void Chasing()
-    {
-        
-    }
+
 
     void Start()
     {
@@ -75,18 +68,52 @@ public class NPC : MonoBehaviour
         }
 
         _waypoints[n_waypoint].gameObject.SetActive(true);
+        obs.m_MyEvent.AddListener(SeePlayer);
+    }
+
+    //Patrol --> Chase
+    public void SeePlayer()
+    {
+        Debug.Log("End Patrolling");
+        Debug.Log("Start chase");
+        obs.m_MyEvent.RemoveListener(SeePlayer);
+        isPatrolling = false;
+        isInvestigating = false;
+        isChasing = true;
+    }
+    
+    //Chase --> investigation
+    private void LostPlayer()
+    {
+        Debug.Log("End Chasing");
+        Debug.Log("Investigating");
+        isChasing = false;
+        isInvestigating = true;
+    }
+    
+    //Investigation --> Patrol
+    void EndInvestigation()
+    {
+        Debug.Log("Finished investigating");
+        Debug.Log("Start Patrol");
+        //obs.m_MyEvent.AddListener(SeePlayer);
+        choseDirection = false;
+        isInvestigating = false;
+        isPatrolling = true;
     }
 
     private void FixedUpdate()
     {
         if(isPatrolling)
             Patrolling();
-        if(isInvestigating)
+        else if(isInvestigating)
             Investigating();
-        if(isChasing)
-            Chase();
+        else if(isChasing)
+            Chasing();
     }
-    void Chase(){}
+    
+
+    
 
     private void Patrolling()
     {
@@ -121,14 +148,23 @@ public class NPC : MonoBehaviour
             else    // WHEN A DIRECTION IS CHOSEN, MOVE TOWARDS THE OBJECTIVE
             {
                 MoveTo(targetPoint);
+                if (DistanceLessThan(0.8f, targetPoint))
+                {
+                    
+                    EndInvestigation();
+                }
             }
         }
+    }
+    void Chasing()
+    {
+        LostPlayer();
     }
 
     private void MoveTo(Vector3 target)
     {
         if (DistanceLessThan(0.75f, target))
-            movementSpeed = 0;
+            movementSpeed = isPatrolling ? 1:0;
         else
             movementSpeed = 2;
 
@@ -211,4 +247,5 @@ public class NPC : MonoBehaviour
         Gizmos.color = Color.red;
         Gizmos.DrawRay(transform.position, randomDirection * maximumDistanceCheck);
     }
+    
 }
