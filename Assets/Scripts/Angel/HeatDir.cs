@@ -14,13 +14,21 @@ public class HeatDir
         Unknow = 4
     }
 
-    private readonly Dir _myDir;
+    private Dir _myDir;
+    public Transform NextPoint { get; private set; }
 
     public HeatDir(Dir d)
     {
         _myDir = d;
     }
+    public HeatDir(Dir d,Transform t)
+    {
+        _myDir = d;
+        NextPoint = t;
+    }
 
+    public bool NotNull(){return _myDir != Dir.Unknow;}
+    
     private bool Opposite(Dir d)
     {
         switch (d)
@@ -47,5 +55,15 @@ public class HeatDir
     public static bool operator ==(HeatDir h1, HeatDir h2)
     {
         return !(h1 != h2);
+    }
+
+    public override bool Equals(object obj)
+    {
+        return ((HeatDir)obj)._myDir == _myDir;
+    }
+
+    public override int GetHashCode()
+    {
+        return (int)_myDir;
     }
 }

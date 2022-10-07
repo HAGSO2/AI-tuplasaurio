@@ -6,17 +6,27 @@ using Random = UnityEngine.Random;
 
 public class HeatPoint : MonoBehaviour
 {
-    public HeatPoint[] Conections;
-    private HeatDir[] _dirs;
+    [SerializeField] private Transform[] adyacent;
+    [SerializeField] private HeatDir.Dir[] conection_type;
+    private HeatDir[] dirs;
 
-    public Vector3 RNext(HeatDir previous)
+    private void Start()
     {
-        int i = Random.Range(0, Conections.Length);
-        while (_dirs[i] != previous)
+        dirs = new HeatDir[adyacent.Length];
+        for (int i = 0; i < adyacent.Length; i++)
         {
-            i = Random.Range(0, Conections.Length);
+            dirs[i] = new HeatDir(conection_type[i], adyacent[i]);
+        }
+    }
+
+    public HeatDir RNext(HeatDir previous)
+    {
+        int i = Random.Range(0, dirs.Length);
+        while (dirs[i] != previous)
+        {
+            i = Random.Range(0, dirs.Length);
         }
 
-        return Conections[i].transform.position;
+        return dirs[i];
     }
 }
