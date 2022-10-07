@@ -2,13 +2,34 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class InvestigationBehaviour : MonoBehaviour
+[RequireComponent(typeof(Rigidbody))]
+public class NPC : MonoBehaviour
 {
+    [Header("Patrolling")]
+    [SerializeField] private Transform waypointContainer;
+    private Transform[] _waypoints;
+    private int n_waypoint;
+
+    [SerializeField]
+    private float movementSpeed;
+    [SerializeField]
+    private float turnSpeed;
+
+    private bool movingForward;
+    private bool stopped;
+
+    private float stoppedTimer;
+    [SerializeField]
+    private float stoppedMaxTime;
+
+    private Rigidbody rb;
+
+    private Vector3 _movDir;
+    
+    [Header("Investigation")]
     [Tooltip("Choose view range")]
     [SerializeField] float viewRange = 40;
     [SerializeField] float maximumDistanceCheck = 5;
-    [SerializeField] float speed = 10f;
-    [SerializeField] float turnSpeed = 10f;
 
     [Tooltip("Select the layer you want the NPC to avoid")]
     [SerializeField] LayerMask layerMaskForInvestigation;
@@ -19,26 +40,70 @@ public class InvestigationBehaviour : MonoBehaviour
     Vector3 randomDirection;
     Vector3 targetPoint;
 
-    float movementSpeed;
 
-    Rigidbody rb;
-
-    bool investigating = false;
     bool choseDirection = false;
 
+    private bool isPatrolling = true;
+    private bool isInvestigating = false;
+    private bool isChasing = false;
+    // Start is called before the first frame update
 
-    private void Awake()
+    /*void MoveTo(Vector3 target)
     {
-        rb = GetComponent<Rigidbody>();
+        transform.position = Vector3.Lerp(transform.position, target, Time.deltaTime * turnSpeed);
+    }*/
+    
+
+    void Chasing()
+    {
+        
     }
+
     void Start()
     {
-        investigating = true;
+        stoppedTimer = 0;
+
+        stopped = false;
+        movingForward = true;
+        rb = GetComponent<Rigidbody>();
+
+        _waypoints = new Transform[waypointContainer.childCount];
+
+        for (int i = 0; i < waypointContainer.childCount; i++)
+        {
+            _waypoints[i] = waypointContainer.GetChild(i);
+        }
+
+        _waypoints[n_waypoint].gameObject.SetActive(true);
     }
 
+    private void FixedUpdate()
+    {
+        if(isPatrolling)
+            Patrolling();
+        if(isInvestigating)
+            Investigating();
+        if(isChasing)
+            Chase();
+    }
+    void Chase(){}
+
+    private void Patrolling()
+    {
+        if (!stopped)
+        {
+            MoveTo(_waypoints[n_waypoint].position);
+        }
+        else
+        {
+            stoppedTimer += Time.deltaTime;
+            if (stoppedTimer >= stoppedMaxTime)
+                stopped = false;
+        }
+    }
     void Investigating()
     {
-        if(investigating)
+        if(isInvestigating)
         {
             if (!choseDirection)    // WHEN INVESTIGATING CHOSE A DIRECTION
             {
@@ -60,13 +125,6 @@ public class InvestigationBehaviour : MonoBehaviour
         }
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        Investigating();
-    }
-
-    // MOVING
     private void MoveTo(Vector3 target)
     {
         if (DistanceLessThan(0.75f, target))
@@ -83,6 +141,7 @@ public class InvestigationBehaviour : MonoBehaviour
     {
         return Vector3.Distance(target, transform.position) < distance;
     }
+
     private void Rotate(Vector3 target)
     {
         if (rb.velocity != Vector3.zero)
@@ -98,7 +157,32 @@ public class InvestigationBehaviour : MonoBehaviour
         }
     }
 
-    // DIRECTIONS
+    private void OnTriggerEnter(Collider other)
+    {
+        // When reaching a waypoint move to the next or the previous waypoint
+        // Also deactivates the used waypoint and activates the next waypoint
+        if (other.CompareTag("Waypoint"))
+        {
+            _waypoints[n_waypoint].gameObject.SetActive(false);
+
+            if (n_waypoint + 1 == _waypoints.Length)
+                movingForward = false;
+            else if (n_waypoint - 1 < 0)
+                movingForward = true;
+
+            if (!movingForward)
+                n_waypoint--;
+            else
+                n_waypoint++;
+
+            _waypoints[n_waypoint].gameObject.SetActive(true);
+
+            float randomNumber = Random.Range(0f, 1f);
+            if (randomNumber > 0.7f)
+                stopped = true;
+        }
+    }
+    
     void ChooseRandomDirection()
     {
         Debug.Log("Chosing direction...");

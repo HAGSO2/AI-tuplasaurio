@@ -12,20 +12,25 @@ public class NPC1 : MonoBehaviour
     private Rigidbody _body;
     private RaycastHit _toPlayer;
     private HeatDir _remember;
-    [SerializeField] private float _vel = 1.5f; // Velocity max magnitude
+    [SerializeField] private float _vel = 5.5f; // Velocity max magnitude
     private Vector3 _movDir;
     void Start()
     {
         _body = gameObject.GetComponent<Rigidbody>();
         _remember = new HeatDir(HeatDir.Dir.Unknow);
-        Chase();
+        //Chase();
+    }
+
+    private void Update()
+    {
+        set_speed(player.position,true);
     }
 
     void Chase()
     {
         if (is_Contact(player.position))
         {
-            StartCoroutine(GetTo(player, false));
+            StartCoroutine(GetTo(player, true));
         }
         else
         {
