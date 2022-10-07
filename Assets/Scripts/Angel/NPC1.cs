@@ -84,4 +84,22 @@ public class NPC1 : MonoBehaviour
             Chase();
         }
     }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("HeatCrumb"))
+        {
+            set_speed(other.transform.position,true);
+            //if (Vector3.Distance(transform.position, other.transform.position) < 0.2f)
+                //transform.GetChild(0).
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("HeatCrumb"))
+        {
+            _remember = other.GetComponent<HeatPoint>().RNext(_remember);
+        }
+    }
 }
