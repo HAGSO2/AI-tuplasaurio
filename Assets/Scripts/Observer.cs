@@ -7,7 +7,7 @@ using UnityEngine.Events;
 public class Observer : MonoBehaviour
 {
     public Transform player;
-    public UnityEvent m_MyEvent;
+    public UnityEvent onSeePlayer;
     //public GameEnding gameEnding;
 
     bool m_IsPlayerInRange;
@@ -43,7 +43,7 @@ public class Observer : MonoBehaviour
             {
                 if (raycastHit.collider.transform == player)
                 {
-                    m_MyEvent.Invoke();
+                    onSeePlayer.Invoke();
                     seePlayer = true;
                     //gameEnding.CaughtPlayer();
                 }

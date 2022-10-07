@@ -43,14 +43,11 @@ public class NPC : MonoBehaviour
     Vector3 targetPoint;
 
 
-    bool choseDirection = false;
+    bool investigationDirectionChosen = false;
 
     private bool isPatrolling = true;
     private bool isInvestigating = false;
     private bool isChasing = false;
-
-
-
 
     void Start()
     {
@@ -65,20 +62,20 @@ public class NPC : MonoBehaviour
         for (int i = 0; i < waypointContainer.childCount; i++)
         {
             _waypoints[i] = waypointContainer.GetChild(i);
+            _waypoints[i].gameObject.SetActive(false);
         }
 
         _waypoints[n_waypoint].gameObject.SetActive(true);
-        obs.m_MyEvent.AddListener(SeePlayer);
+        obs.onSeePlayer.AddListener(StartChase);
     }
 
     //Patrol --> Chase
-    public void SeePlayer()
+    public void StartChase()
     {
-        Debug.Log("End Patrolling");
         Debug.Log("Start chase");
-        obs.m_MyEvent.RemoveListener(SeePlayer);
         isPatrolling = false;
         isInvestigating = false;
+        investigationDirectionChosen = false;
         isChasing = true;
     }
     
@@ -92,12 +89,12 @@ public class NPC : MonoBehaviour
     }
     
     //Investigation --> Patrol
-    void EndInvestigation()
+    void EndInvestigation() // Only executed when NPC is bored
     {
         Debug.Log("Finished investigating");
         Debug.Log("Start Patrol");
         //obs.m_MyEvent.AddListener(SeePlayer);
-        choseDirection = false;
+        investigationDirectionChosen = false;
         isInvestigating = false;
         isPatrolling = true;
     }
@@ -111,8 +108,6 @@ public class NPC : MonoBehaviour
         else if(isChasing)
             Chasing();
     }
-    
-
     
 
     private void Patrolling()
@@ -132,7 +127,7 @@ public class NPC : MonoBehaviour
     {
         if(isInvestigating)
         {
-            if (!choseDirection)    // WHEN INVESTIGATING CHOSE A DIRECTION
+            if (!investigationDirectionChosen)    // WHEN INVESTIGATING CHOSE A DIRECTION
             {
                 ChooseRandomDirection();
                 // Check if this random direction is valid
@@ -140,9 +135,9 @@ public class NPC : MonoBehaviour
                 {
                     targetPoint = transform.position + randomDirection * maximumDistanceCheck;
 
-                    choseDirection = true;
-                    Debug.Log("Direction Chosen!");
-                    Debug.Log(targetPoint);
+                    investigationDirectionChosen = true;
+                    //Debug.Log("Direction Chosen!");
+                    //Debug.Log(targetPoint);
                 }
             }
             else    // WHEN A DIRECTION IS CHOSEN, MOVE TOWARDS THE OBJECTIVE
