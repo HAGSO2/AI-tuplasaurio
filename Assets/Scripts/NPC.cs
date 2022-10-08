@@ -1,7 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using Random = UnityEngine.Random;
 
 [RequireComponent(typeof(Rigidbody))]
 public class NPC : MonoBehaviour
@@ -26,7 +28,7 @@ public class NPC : MonoBehaviour
 
     private Rigidbody rb;
 
-    private Vector3 _movDir;
+    
     
     [Header("Investigation")]
     [Tooltip("Choose view range")]
@@ -43,6 +45,14 @@ public class NPC : MonoBehaviour
     Vector3 targetPoint;
 
 
+    [Header("Chasing")] 
+    [SerializeField] private Transform player;
+    private Vector3 _movDir;
+    [SerializeField] private float _vel = 5.1f;
+
+    private Queue<Vector3> _pendingPositions;
+    private Vector3 lastPos;
+    
     bool investigationDirectionChosen = false;
 
     private bool isPatrolling = true;
@@ -65,6 +75,8 @@ public class NPC : MonoBehaviour
             _waypoints[i].gameObject.SetActive(false);
         }
 
+        _pendingPositions = new Queue<Vector3>();
+
         _waypoints[n_waypoint].gameObject.SetActive(true);
         obs.onSeePlayer.AddListener(StartChase);
     }
@@ -77,6 +89,17 @@ public class NPC : MonoBehaviour
         isInvestigating = false;
         investigationDirectionChosen = false;
         isChasing = true;
+        Vector3 seek = is_Contact();
+        if (seek != Vector3.up)
+        {
+            _pendingPositions.Enqueue(seek);
+            lastPos = seek;
+            Debug.Log("chasing: " + seek);
+        }
+        else
+        {
+            LostPlayer();
+        }
     }
     
     //Chase --> investigation
@@ -107,6 +130,7 @@ public class NPC : MonoBehaviour
             Investigating();
         else if(isChasing)
             Chasing();
+        //Debug.Log(rb.velocity);
     }
     
 
@@ -153,7 +177,87 @@ public class NPC : MonoBehaviour
     }
     void Chasing()
     {
-        LostPlayer();
+        Vector3 seek = is_Contact();
+        /*if (seek != Vector3.up || _pendingPositions.Count != 0)
+        {
+            if (seek != Vector3.up && Vector3.Distance(seek,lastPos) < 6)
+            {
+                Debug.Log(seek);
+                _pendingPositions.Enqueue(seek);
+                Debug.Log("Enui");
+                lastPos = seek;
+            }
+
+            if (set_speed(_pendingPositions.Peek(), _pendingPositions.Count == 1))
+            {
+                _pendingPositions.Dequeue();
+                if (_pendingPositions.Count == 0)
+                {
+                    isChasing = false;
+                    Debug.Log("Player chased");
+                }
+            }
+        }*/
+        if (seek != Vector3.up || _pendingPositions.Count != 0)
+        {
+            if (seek != Vector3.up && Vector3.Distance(seek, lastPos) > 5)
+            {
+                _pendingPositions.Enqueue(seek);
+                lastPos = seek;
+            }
+            MoveTo(_pendingPositions.Peek());
+            if (DistanceLessThan(0.9f, player.position))
+            {
+                isChasing = false;
+                Debug.Log("Player is chased");
+            }
+
+            if (DistanceLessThan(0.2f, _pendingPositions.Peek()))
+            {
+                Debug.Log("DeEnui");
+                _pendingPositions.Dequeue();
+            }
+        }
+        else
+        {
+            Debug.Log("I losted the player");
+            LostPlayer();
+        }
+        //Debug.Log(Vector3.Distance(player.position,transform.position));
+    }
+
+    Vector3 is_Contact()
+    {
+        RaycastHit toPlayer;
+        if(Physics.Raycast(transform.position, player.position - transform.position, out toPlayer, 100, 7))
+        {
+            return toPlayer.point;
+        }
+        return Vector3.up;
+    }
+    private bool set_speed(Vector3 runnigAt, bool stop)//if stop == true will stop on the point is running, if not, will not stop
+    {
+        //Changes speed direction to go to the runningPoint
+
+        Vector3 position = transform.position;
+        Vector3 desired = runnigAt - position;
+        Vector3 steering = desired - rb.velocity;
+        Debug.DrawRay(position,steering.normalized * _vel,Color.red);
+        steering.Normalize();
+        if (Vector3.Angle(desired, steering) < 30 || (stop && (transform.position - runnigAt).magnitude < 10))
+        {
+            //Debug.Log(steering);
+            _movDir = steering;
+            rb.AddForce(steering * _vel);
+        }
+        else
+        {
+            rb.AddForce(_movDir * _vel);
+            //rb.AddForce(desired.normalized * _vel);
+        }
+        //Debug.Log("D: " + desired);
+        Rotate(runnigAt);
+        return Math.Abs((transform.position - runnigAt).magnitude) < 0.2f;
     }
 
     private void MoveTo(Vector3 target)
