@@ -292,7 +292,7 @@ public class NPC : MonoBehaviour
         }
     }
 
-    private void OnTriggerEnter(Collider other)
+    protected virtual void OnTriggerEnter(Collider other)
     {
         // When reaching a waypoint move to the next or the previous waypoint
         // Also deactivates the used waypoint and activates the next waypoint

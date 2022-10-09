@@ -969,6 +969,7 @@ GameObject:
   - component: {fileID: 1066477604822881618}
   - component: {fileID: 5680466888075083632}
   - component: {fileID: 1284397318408660114}
+  - component: {fileID: 2503503212010772115}
   - component: {fileID: 1851268242}
   - component: {fileID: 2738497077373139825}
   m_Layer: 0
@@ -1052,7 +1053,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8593400155575843310}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 5c8200dcc4a8d85489a75290064c4b7c, type: 3}
   m_Name: 
@@ -1064,9 +1065,22 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8593400155575843310}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 86d198e5246b0fa478d082d9ab9f544d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  turnSpeed: 20
+--- !u!114 &2503503212010772115
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8593400155575843310}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dd3536b71a5d12442b8851bcc71cb826, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   turnSpeed: 20

@@ -8,7 +8,7 @@ public class Observer : MonoBehaviour
 {
     public Transform player;
     public UnityEvent onSeePlayer;
-    //public GameEnding gameEnding;
+    public GameEnding gameEnding;
 
     bool m_IsPlayerInRange;
     private bool seePlayer;
@@ -45,7 +45,7 @@ public class Observer : MonoBehaviour
                 {
                     onSeePlayer.Invoke();
                     seePlayer = true;
-                    //gameEnding.CaughtPlayer();
+                    gameEnding.CaughtPlayer();
                 }
             }
         }
