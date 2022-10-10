@@ -11,7 +11,7 @@ public class NPC : MonoBehaviour
     [Header("Patrolling")]
     [SerializeField] private Transform waypointContainer;
     private Transform[] _waypoints;
-    private int n_waypoint;
+    private int chosenWaypoint;
     public Observer obs;
 
     [SerializeField]
@@ -77,7 +77,7 @@ public class NPC : MonoBehaviour
 
         _pendingPositions = new Queue<Vector3>();
 
-        _waypoints[n_waypoint].gameObject.SetActive(true);
+        _waypoints[chosenWaypoint].gameObject.SetActive(true);
         obs.onSeePlayer.AddListener(StartChase);
     }
 
@@ -138,7 +138,7 @@ public class NPC : MonoBehaviour
     {
         if (!stopped)
         {
-            MoveTo(_waypoints[n_waypoint].position);
+            MoveTo(_waypoints[chosenWaypoint].position);
         }
         else
         {
@@ -298,19 +298,19 @@ public class NPC : MonoBehaviour
         // Also deactivates the used waypoint and activates the next waypoint
         if (other.CompareTag("Waypoint"))
         {
-            _waypoints[n_waypoint].gameObject.SetActive(false);
+            _waypoints[chosenWaypoint].gameObject.SetActive(false);
 
-            if (n_waypoint + 1 == _waypoints.Length)
+            if (chosenWaypoint + 1 == _waypoints.Length)
                 movingForward = false;
-            else if (n_waypoint - 1 < 0)
+            else if (chosenWaypoint - 1 < 0)
                 movingForward = true;
 
             if (!movingForward)
-                n_waypoint--;
+                chosenWaypoint--;
             else
-                n_waypoint++;
+                chosenWaypoint++;
 
-            _waypoints[n_waypoint].gameObject.SetActive(true);
+            _waypoints[chosenWaypoint].gameObject.SetActive(true);
 
             float randomNumber = Random.Range(0f, 1f);
             if (randomNumber > 0.7f)
