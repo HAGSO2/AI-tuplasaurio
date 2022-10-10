@@ -62,6 +62,7 @@ public class NPC : MonoBehaviour
     void Start()
     {
         stoppedTimer = 0;
+        chosenWaypoint = 0;
 
         stopped = false;
         movingForward = true;
