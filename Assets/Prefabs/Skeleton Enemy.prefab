@@ -519,6 +519,7 @@ MonoBehaviour:
   onSeePlayer:
     m_PersistentCalls:
       m_Calls: []
+  gameEnding: {fileID: 0}
 --- !u!1 &1973097666030662620
 GameObject:
   m_ObjectHideFlags: 0
@@ -847,7 +848,7 @@ GameObject:
   - component: {fileID: 8583001170197443719}
   m_Layer: 0
   m_Name: Waypoint (1)
-  m_TagString: Untagged
+  m_TagString: Waypoint
   m_Icon: {fileID: -964228994112308473, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -875,7 +876,7 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3422856580745032192}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
@@ -1181,7 +1182,7 @@ GameObject:
   - component: {fileID: 3410203981039414968}
   m_Layer: 0
   m_Name: Waypoint
-  m_TagString: Untagged
+  m_TagString: Waypoint
   m_Icon: {fileID: -964228994112308473, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1209,7 +1210,7 @@ BoxCollider:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5025689610541545987}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
@@ -2054,7 +2055,7 @@ GameObject:
   - component: {fileID: 3991886751973293129}
   - component: {fileID: 4591719515085857949}
   - component: {fileID: 7480697566692181441}
-  - component: {fileID: 5471585787673547008}
+  - component: {fileID: 8769068729629638397}
   m_Layer: 0
   m_Name: Skeleton
   m_TagString: Untagged
@@ -2110,7 +2111,7 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 84
   m_CollisionDetection: 0
---- !u!114 &5471585787673547008
+--- !u!114 &8769068729629638397
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -2119,21 +2120,21 @@ MonoBehaviour:
   m_GameObject: {fileID: 8654704879653684473}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 6ec513fa41827ea4895a2b46e17d0d07, type: 3}
+  m_Script: {fileID: 11500000, guid: f019839117839924cb3c505be3102e6e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   waypointContainer: {fileID: 2105091332}
   obs: {fileID: 5868586856470143594}
-  movementSpeed: 0
-  turnSpeed: 0
-  stoppedMaxTime: 0
+  movementSpeed: 1
+  turnSpeed: 1
+  stoppedMaxTime: 1
   viewRange: 40
   maximumDistanceCheck: 5
   layerMaskForInvestigation:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 64
   player: {fileID: 0}
-  _vel: 5.1
+  _vel: 1.1
 --- !u!1 &8777192863917628920
 GameObject:
   m_ObjectHideFlags: 0

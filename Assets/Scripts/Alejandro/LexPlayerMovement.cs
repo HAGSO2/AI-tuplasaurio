@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,6 +6,8 @@ using UnityEngine;
 public class LexPlayerMovement : MonoBehaviour
 {
     public float turnSpeed = 20f;
+
+    [SerializeField] private CapsuleCollider _noise;
 
     Animator m_Animator;
     Rigidbody m_Rigidbody;
@@ -32,6 +35,20 @@ public class LexPlayerMovement : MonoBehaviour
 
         Vector3 desiredForward = Vector3.RotateTowards(transform.forward, m_Movement, turnSpeed * Time.deltaTime, 0f);
         m_Rotation = Quaternion.LookRotation(desiredForward);
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.LeftShift))
+        {
+            m_Animator.speed = 0.5f;
+            _noise.radius = 0.5f;
+        }
+        if (Input.GetKeyUp(KeyCode.LeftShift))
+        {
+            m_Animator.speed = 1.5f;
+            _noise.radius = 4.0f;
+        }
     }
 
     void OnAnimatorMove()
