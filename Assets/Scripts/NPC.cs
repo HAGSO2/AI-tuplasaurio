@@ -261,7 +261,7 @@ public class NPC : MonoBehaviour
         return Math.Abs((transform.position - runnigAt).magnitude) < 0.2f;
     }
 
-    private void MoveTo(Vector3 target)
+    protected void MoveTo(Vector3 target)
     {
         if (DistanceLessThan(0.75f, target))
             movementSpeed = isPatrolling ? 1:0;
@@ -273,7 +273,7 @@ public class NPC : MonoBehaviour
         rb.MovePosition(transform.position + transform.forward * Time.fixedDeltaTime * movementSpeed);
     }
 
-    private bool DistanceLessThan(float distance, Vector3 target)
+    protected bool DistanceLessThan(float distance, Vector3 target)
     {
         return Vector3.Distance(target, transform.position) < distance;
     }
