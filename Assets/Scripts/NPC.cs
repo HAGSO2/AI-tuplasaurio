@@ -263,10 +263,13 @@ public class NPC : MonoBehaviour
 
     protected void MoveTo(Vector3 target)
     {
-        if (DistanceLessThan(0.75f, target))
-            movementSpeed = isPatrolling ? 1:0;
-        else
-            movementSpeed = 2;
+        if (!isChasing)
+        {
+            if (DistanceLessThan(0.75f, target))
+                movementSpeed = isPatrolling ? 1:0;
+            else
+                movementSpeed = 2;
+        }
 
         Rotate(target);
 

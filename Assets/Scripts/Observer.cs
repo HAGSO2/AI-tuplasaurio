@@ -45,7 +45,7 @@ public class Observer : MonoBehaviour
                 {
                     onSeePlayer.Invoke();
                     seePlayer = true;
-                    gameEnding.CaughtPlayer();
+                    //gameEnding.CaughtPlayer();
                 }
             }
         }
