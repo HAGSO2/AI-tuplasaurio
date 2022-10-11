@@ -139,7 +139,7 @@ public class NPC : MonoBehaviour
     {
         if (!stopped)
         {
-            MoveTo(_waypoints[chosenWaypoint].position);
+            //MoveTo(_waypoints[chosenWaypoint].position);
         }
         else
         {
