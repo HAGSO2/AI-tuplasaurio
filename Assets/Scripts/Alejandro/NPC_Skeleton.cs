@@ -12,6 +12,7 @@ public class NPC_Skeleton : NPC
 
     void Start()
     {
+        base.Start();
         _animator = GetComponent<Animator>();
         _animator.SetBool("isAttacking", false);
     }
@@ -38,15 +39,4 @@ public class NPC_Skeleton : NPC
         }
     }
 
-    private void FollowPath(List<Vector3> path)
-    {
-        foreach (Vector3 coord in path)
-        {
-            while (DistanceLessThan(0.85f, coord))
-            {
-                MoveTo(coord);
-            }
-        }
-    }
-    
 }

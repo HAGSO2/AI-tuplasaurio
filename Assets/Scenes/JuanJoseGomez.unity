@@ -764,7 +764,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   WallMask:
     serializedVersion: 2
-    m_Bits: 8
+    m_Bits: 72
   gridWorldSize: {x: 30, y: 30}
   nodeRadius: 0.5
   distance: 0

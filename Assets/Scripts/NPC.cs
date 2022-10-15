@@ -8,6 +8,8 @@ using Random = UnityEngine.Random;
 [RequireComponent(typeof(Rigidbody))]
 public class NPC : MonoBehaviour
 {
+    private Pathfinding _path;
+    
     [Header("Patrolling")]
     [SerializeField] private Transform waypointContainer;
     private Transform[] _waypoints;
@@ -47,11 +49,13 @@ public class NPC : MonoBehaviour
 
     [Header("Chasing")] 
     [SerializeField] private Transform player;
-    private Vector3 _movDir;
-    [SerializeField] private float _vel = 5.1f;
 
-    private Queue<Vector3> _pendingPositions;
-    private Vector3 lastPos;
+    private bool chasingPath;
+
+    //private Queue<Vector3> _pendingPositions;
+    //private Vector3 lastPos;
+    [SerializeField] private GameEnding gameEnding; 
+    private 
     
     bool investigationDirectionChosen = false;
 
@@ -59,8 +63,10 @@ public class NPC : MonoBehaviour
     private bool isInvestigating = false;
     private bool isChasing = false;
 
-    void Start()
+    protected void Start()
     {
+        _path = GetComponent<Pathfinding>();
+        chasingPath = false;
         stoppedTimer = 0;
         chosenWaypoint = 0;
 
@@ -75,8 +81,7 @@ public class NPC : MonoBehaviour
             _waypoints[i] = waypointContainer.GetChild(i);
             _waypoints[i].gameObject.SetActive(false);
         }
-
-        _pendingPositions = new Queue<Vector3>();
+        
 
         _waypoints[chosenWaypoint].gameObject.SetActive(true);
         obs.onSeePlayer.AddListener(StartChase);
@@ -91,13 +96,7 @@ public class NPC : MonoBehaviour
         investigationDirectionChosen = false;
         isChasing = true;
         Vector3 seek = is_Contact();
-        if (seek != Vector3.up)
-        {
-            _pendingPositions.Enqueue(seek);
-            lastPos = seek;
-            Debug.Log("chasing: " + seek);
-        }
-        else
+        if (seek == Vector3.up)
         {
             LostPlayer();
         }
@@ -179,52 +178,16 @@ public class NPC : MonoBehaviour
     void Chasing()
     {
         Vector3 seek = is_Contact();
-        /*if (seek != Vector3.up || _pendingPositions.Count != 0)
+        if (seek != Vector3.up)
         {
-            if (seek != Vector3.up && Vector3.Distance(seek,lastPos) < 6)
+            if (DistanceLessThan(0.8f, seek))
             {
-                Debug.Log(seek);
-                _pendingPositions.Enqueue(seek);
-                Debug.Log("Enui");
-                lastPos = seek;
+                gameEnding.CaughtPlayer();
             }
-
-            if (set_speed(_pendingPositions.Peek(), _pendingPositions.Count == 1))
-            {
-                _pendingPositions.Dequeue();
-                if (_pendingPositions.Count == 0)
-                {
-                    isChasing = false;
-                    Debug.Log("Player chased");
-                }
-            }
-        }*/
-        if (seek != Vector3.up || _pendingPositions.Count != 0)
-        {
-            if (seek != Vector3.up && Vector3.Distance(seek, lastPos) > 5)
-            {
-                _pendingPositions.Enqueue(seek);
-                lastPos = seek;
-            }
-            MoveTo(_pendingPositions.Peek());
-            if (DistanceLessThan(0.9f, player.position))
-            {
-                isChasing = false;
-                Debug.Log("Player is chased");
-            }
-
-            if (DistanceLessThan(0.2f, _pendingPositions.Peek()))
-            {
-                Debug.Log("DeEnui");
-                _pendingPositions.Dequeue();
-            }
+            if(!chasingPath)
+                StartCoroutine(FollowPath(_path.FindPath(transform.position,player.position)));
+            
         }
-        else
-        {
-            Debug.Log("I losted the player");
-            LostPlayer();
-        }
-        //Debug.Log(Vector3.Distance(player.position,transform.position));
     }
 
     Vector3 is_Contact()
@@ -236,6 +199,7 @@ public class NPC : MonoBehaviour
         }
         return Vector3.up;
     }
+    /*
     private bool set_speed(Vector3 runnigAt, bool stop)//if stop == true will stop on the point is running, if not, will not stop
     {
         //Changes speed direction to go to the runningPoint
@@ -259,7 +223,7 @@ public class NPC : MonoBehaviour
         //Debug.Log("D: " + desired);
         Rotate(runnigAt);
         return Math.Abs((transform.position - runnigAt).magnitude) < 0.2f;
-    }
+    }*/
 
     protected void MoveTo(Vector3 target)
     {
@@ -349,6 +313,21 @@ public class NPC : MonoBehaviour
 
         Gizmos.color = Color.red;
         Gizmos.DrawRay(transform.position, randomDirection * maximumDistanceCheck);
+    }
+    private IEnumerator FollowPath(Vector3[] path)
+    {
+        chasingPath = true;
+        foreach (Vector3 coord in path)
+        {
+            while (DistanceLessThan(0.85f, coord))
+            {
+                MoveTo(coord);
+                Debug.Log(coord);
+                yield return new WaitForFixedUpdate();
+            }
+        }
+
+        chasingPath = false;
     }
     
 }

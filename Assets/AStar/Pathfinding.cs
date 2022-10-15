@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -16,7 +17,7 @@ public class Pathfinding : MonoBehaviour
         FindPath(this.transform.position,targetPos.position);
     }
 
-    void FindPath(Vector3 startPosition, Vector3 targetPosition){   
+    public Vector3[] FindPath(Vector3 startPosition, Vector3 targetPosition){   
         List<Node> openList = new List<Node>();
         List<Node> closeList = new List<Node>();
 
@@ -37,8 +38,14 @@ public class Pathfinding : MonoBehaviour
 
             //If found it
             if(currentNode == grid.NodeFromWorldPosition(targetPosition)){
-                GetFinalPath(grid.NodeFromWorldPosition(startPosition), currentNode);
-                break;
+                List<Node> nds = GetFinalPath(grid.NodeFromWorldPosition(startPosition), currentNode);
+                Vector3[] posts = new Vector3[nds.Count];
+                for (int i = 0; i < nds.Count; i++)
+                {
+                    posts[i] = nds[i].position;
+                }
+
+                return posts;
             }
 
             openList.Remove(currentNode);
@@ -56,10 +63,12 @@ public class Pathfinding : MonoBehaviour
                     }
                 }
             }
-        }        
+        }
+
+        return Array.Empty<Vector3>();
     }
 
-    void GetFinalPath(Node nodeStart, Node nodeEnd){
+    List<Node> GetFinalPath(Node nodeStart, Node nodeEnd){
         List<Node> FinalPath = new List<Node>();
         Node currentNode = nodeEnd;
 
@@ -72,6 +81,7 @@ public class Pathfinding : MonoBehaviour
 
         finalPath = FinalPath;
         grid.paths.Insert(0,FinalPath);
+        return finalPath;
     }
 
     int GetEucledianDistance(Node nodeA, Node nodeB){

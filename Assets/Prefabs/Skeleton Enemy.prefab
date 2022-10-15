@@ -500,9 +500,9 @@ CapsuleCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   m_Radius: 0.73
-  m_Height: 4.42
+  m_Height: 4.770158
   m_Direction: 2
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Center: {x: 0, y: 0, z: 0.1750787}
 --- !u!114 &5868586856470143594
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -519,7 +519,6 @@ MonoBehaviour:
   onSeePlayer:
     m_PersistentCalls:
       m_Calls: []
-  gameEnding: {fileID: 0}
 --- !u!1 &1973097666030662620
 GameObject:
   m_ObjectHideFlags: 0
@@ -852,7 +851,7 @@ GameObject:
   m_Icon: {fileID: -964228994112308473, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &4974310237619035020
 Transform:
   m_ObjectHideFlags: 0
@@ -1186,7 +1185,7 @@ GameObject:
   m_Icon: {fileID: -964228994112308473, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &2777607008519332266
 Transform:
   m_ObjectHideFlags: 0
@@ -2057,6 +2056,7 @@ GameObject:
   - component: {fileID: 4591719515085857949}
   - component: {fileID: 7480697566692181441}
   - component: {fileID: 8769068729629638397}
+  - component: {fileID: 2150351842694845401}
   m_Layer: 0
   m_Name: Skeleton
   m_TagString: Untagged
@@ -2156,6 +2156,20 @@ MonoBehaviour:
     m_Bits: 64
   player: {fileID: 0}
   _vel: 1.1
+  gameEnding: {fileID: 0}
+--- !u!114 &2150351842694845401
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8654704879653684473}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a67ba7dfe36b12c49b1497aaa3a485e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetPos: {fileID: 0}
 --- !u!1 &8777192863917628920
 GameObject:
   m_ObjectHideFlags: 0
