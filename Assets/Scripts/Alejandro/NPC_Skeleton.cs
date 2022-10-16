@@ -10,7 +10,7 @@ public class NPC_Skeleton : NPC
     public static bool playerSeen = false;
     public static Vector3 playerPosition;
 
-    void Start()
+    new void Start()
     {
         base.Start();
         _animator = GetComponent<Animator>();
@@ -37,6 +37,10 @@ public class NPC_Skeleton : NPC
         {
             //FollowPath(pathfinding.finalPath);
         }
+    }
+
+    new void FixedUpdate(){
+        base.FixedUpdate();
     }
 
 }

@@ -42,7 +42,7 @@ public class Grid : MonoBehaviour
         }
     }
 
-    private void OnDrawGizmos(){
+    /*private void OnDrawGizmos(){
         Gizmos.DrawWireCube(transform.position, new Vector3(gridWorldSize.x,1,gridWorldSize.y));
         if(grid != null){
             foreach(Node node in grid){
@@ -62,7 +62,7 @@ public class Grid : MonoBehaviour
             }
         }
         paths.Clear();
-    }
+    }*/
 
     public Node NodeFromWorldPosition(Vector3 WorldPos){
         float xPoint = ((WorldPos.x + gridWorldSize.x / 2) / gridWorldSize.x);

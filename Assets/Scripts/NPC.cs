@@ -65,7 +65,7 @@ public class NPC : MonoBehaviour
 
     protected void Start()
     {
-        _path = GetComponent<Pathfinding>();
+        /*_path = GetComponent<Pathfinding>();
         chasingPath = false;
         stoppedTimer = 0;
         chosenWaypoint = 0;
@@ -84,7 +84,7 @@ public class NPC : MonoBehaviour
         
 
         _waypoints[chosenWaypoint].gameObject.SetActive(true);
-        obs.onSeePlayer.AddListener(StartChase);
+        obs.onSeePlayer.AddListener(StartChase);*/
     }
 
     //Patrol --> Chase
@@ -96,6 +96,7 @@ public class NPC : MonoBehaviour
         investigationDirectionChosen = false;
         isChasing = true;
         Vector3 seek = is_Contact();
+        Debug.Log(seek);
         if (seek == Vector3.up)
         {
             LostPlayer();
@@ -122,15 +123,16 @@ public class NPC : MonoBehaviour
         isPatrolling = true;
     }
 
-    private void FixedUpdate()
+    protected void FixedUpdate()
     {
-        if(isPatrolling)
+        /*if(isPatrolling)
             Patrolling();
         else if(isInvestigating)
             Investigating();
         else if(isChasing)
             Chasing();
-        //Debug.Log(rb.velocity);
+        //Debug.Log(rb.velocity);*/
+        Set_speed(new Vector3(20,0,20));
     }
     
 
@@ -177,16 +179,19 @@ public class NPC : MonoBehaviour
     }
     void Chasing()
     {
-        Vector3 seek = is_Contact();
-        if (seek != Vector3.up)
+//        Debug.Log(seek);
+        if (is_Contact() != Vector3.up)
         {
-            if (DistanceLessThan(0.8f, seek))
+            /*if (DistanceLessThan(0.8f, player.position))
             {
                 gameEnding.CaughtPlayer();
+            }*/
+            if (!chasingPath)
+            {
+                Debug.Log("I've started calcing the path");
+                StartCoroutine(FollowPath(_path.FindPath(transform.position, player.position)));
             }
-            if(!chasingPath)
-                StartCoroutine(FollowPath(_path.FindPath(transform.position,player.position)));
-            
+
         }
     }
 
@@ -195,7 +200,7 @@ public class NPC : MonoBehaviour
         RaycastHit toPlayer;
         if(Physics.Raycast(transform.position, player.position - transform.position, out toPlayer, 100, 7))
         {
-            return toPlayer.point;
+            return toPlayer.transform.position;
         }
         return Vector3.up;
     }
@@ -238,6 +243,16 @@ public class NPC : MonoBehaviour
         Rotate(target);
 
         rb.MovePosition(transform.position + transform.forward * Time.fixedDeltaTime * movementSpeed);
+    }
+
+    private void Set_speed(Vector3 running)
+    {
+        //Debug.Log("Running");
+        Vector3 desired = running - transform.position;
+        Vector3 steering = desired - rb.velocity;
+        steering.Normalize();
+        //Debug.Log(steering);
+        rb.MovePosition(steering);
     }
 
     protected bool DistanceLessThan(float distance, Vector3 target)
@@ -317,17 +332,20 @@ public class NPC : MonoBehaviour
     private IEnumerator FollowPath(Vector3[] path)
     {
         chasingPath = true;
+        Debug.Log("I end up calcing");
         foreach (Vector3 coord in path)
         {
-            while (DistanceLessThan(0.85f, coord))
+            Debug.Log(coord);
+            
+            while (DistanceLessThan(0.002f, coord))
             {
-                MoveTo(coord);
+                Set_speed(coord);
                 Debug.Log(coord);
                 yield return new WaitForFixedUpdate();
             }
         }
 
-        chasingPath = false;
+        //chasingPath = false;
     }
     
 }
