@@ -38,8 +38,9 @@ public class NPC : MonoBehaviour
     
     [Header("Investigation")]
     [Tooltip("Choose view range")]
-    [SerializeField] private float _investigationMaxRange = 15;
-    [SerializeField] private float _investigationMinRange = 8;
+    [SerializeField] private float _investigationMaxDistance = 15;
+    [SerializeField] private float _investigationMinDistance = 8;
+    [SerializeField] private float _viewRange = 45;
 
     [Tooltip("Select the layer you want the NPC to use")]
     [SerializeField] LayerMask layerMaskForInvestigation;
@@ -282,11 +283,19 @@ public class NPC : MonoBehaviour
 
     private Vector3 GetInvestigationPoint()
     {
-        //Calculate random point in range
-        float randomZ = Random.Range(3f, _investigationMaxRange);
-        float randomX = Random.Range(-_investigationMaxRange, _investigationMaxRange);
+       // Calculate a random point in front of the view of the NPC
+       // Choose a random direction and then choose a random point in the range
+        Vector3 randomDirection = ChooseRandomDirection();
 
-        return new Vector3(transform.position.x + randomX, transform.position.y, transform.position.z + randomZ);
+        return randomDirection * Random.Range(_investigationMinDistance, _investigationMaxDistance);
+    }
+    Vector3 ChooseRandomDirection()
+    {
+        Debug.Log("Chosing direction...");
+
+        float randomAngle = Random.Range(-_viewRange / 2, _viewRange / 2);
+
+        return Quaternion.AngleAxis(randomAngle, Vector3.up) * transform.forward;
     }
 
     private void Set_speed(Vector3 running)
@@ -345,15 +354,17 @@ public class NPC : MonoBehaviour
                 stopped = true;
         }
     }
-    
 
-    
     private void OnDrawGizmosSelected()
     {
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, _investigationMaxRange);
-        Gizmos.color = Color.green;
-        Gizmos.DrawWireSphere(transform.position, _investigationMinRange);
+        Vector3 minimumDirection = Quaternion.AngleAxis(-_viewRange / 2, Vector3.up) * transform.forward;
+        Vector3 maximumDirection = Quaternion.AngleAxis(_viewRange / 2, Vector3.up) * transform.forward;
+
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawRay(transform.position + (minimumDirection * _investigationMinDistance), minimumDirection * _investigationMaxDistance);
+
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawRay(transform.position + (maximumDirection * _investigationMinDistance), maximumDirection * _investigationMaxDistance);
     }
 
     private IEnumerator FollowPath(Vector3[] path)

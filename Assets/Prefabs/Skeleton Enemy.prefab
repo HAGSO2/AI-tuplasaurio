@@ -2149,12 +2149,13 @@ MonoBehaviour:
   movementSpeed: 1
   turnSpeed: 1
   stoppedMaxTime: 1
-  viewRange: 40
-  maximumDistanceCheck: 5
+  _investigationMaxDistance: 4
+  _investigationMinDistance: 0.6
+  _viewRange: 45
   layerMaskForInvestigation:
     serializedVersion: 2
     m_Bits: 64
-  player: {fileID: 0}
+  _player: {fileID: 0}
   _vel: 1.1
   gameEnding: {fileID: 0}
 --- !u!114 &2150351842694845401
