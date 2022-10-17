@@ -95,7 +95,7 @@ public class NPC : MonoBehaviour
         Debug.Log("Start chase");
         isPatrolling = false;
         isInvestigating = false;
-        investigationDirectionChosen = false;
+        investigationPointChosen = false;
         isChasing = true;
     }
     
