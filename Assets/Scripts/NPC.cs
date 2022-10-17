@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 [RequireComponent(typeof(Rigidbody))]
@@ -47,10 +48,13 @@ public class NPC : MonoBehaviour
     Vector3 targetPoint;
 
 
+    [FormerlySerializedAs("player")]
     [Header("Chasing")] 
-    [SerializeField] private Transform player;
-
-    private bool chasingPath;
+    [SerializeField] private Transform _player;
+    [SerializeField]private float _vel;
+    private bool _followingP;
+    private Vector3 _lastPos;
+    private float _dist;
 
     //private Queue<Vector3> _pendingPositions;
     //private Vector3 lastPos;
@@ -66,7 +70,7 @@ public class NPC : MonoBehaviour
     protected void Start()
     {
         _path = GetComponent<Pathfinding>();
-        chasingPath = false;
+        _followingP = false;
         stoppedTimer = 0;
         chosenWaypoint = 0;
 
@@ -95,12 +99,6 @@ public class NPC : MonoBehaviour
         isInvestigating = false;
         investigationDirectionChosen = false;
         isChasing = true;
-        Vector3 seek = is_Contact();
-        Debug.Log(seek);
-        if (seek == Vector3.up)
-        {
-            LostPlayer();
-        }
     }
     
     //Chase --> investigation
@@ -179,56 +177,71 @@ public class NPC : MonoBehaviour
     }
     void Chasing()
     {
-//        Debug.Log(seek);
-        if (is_Contact() != Vector3.up)
+        _dist = Vector3.Distance(transform.position, _player.position);
+        //Debug.Log(_dist);
+        if(_lastPos != Vector3.up)
+            Rotate(_player.position);
+        if (_dist < 2.8f && is_Contact(_player.position))
         {
-            /*if (DistanceLessThan(0.8f, player.position))
+            set_speed(_player.position);
+            if (_dist < 0.3f)
             {
+                //Debug.Log("Player chased");
+                //Destroy(this);
                 gameEnding.CaughtPlayer();
-            }*/
-            if (!chasingPath)
-            {
-                Debug.Log("I've started calcing the path");
-                StartCoroutine(FollowPath(_path.FindPath(transform.position, player.position)));
             }
-
         }
-    }
 
-    Vector3 is_Contact()
-    {
-        RaycastHit toPlayer;
-        if(Physics.Raycast(transform.position, player.position - transform.position, out toPlayer, 100, 7))
+        if (!_followingP && is_Contact(_player.position))
         {
-            return toPlayer.transform.position;
+            Vector3[] path = _path.FindPath(transform.position, _player.position);
+            StartCoroutine(FollowPath(path));
+            //CreateRefs(path);
+            //FollowPath(_pathfinding.FindPath(transform.position,_target.position));
         }
-        return Vector3.up;
+        else if(!_followingP && _lastPos != Vector3.up)
+        {
+            Debug.Log("Search on: " + _lastPos);
+            Vector3[] path = _path.FindPath(transform.position, _lastPos);
+            StartCoroutine(FollowPath(path));
+            //CreateRefs(path);
+            _lastPos = Vector3.up;
+        }
+        else if(!_followingP && _lastPos == Vector3.up)
+            //Destroy(this);
+            LostPlayer();
     }
-    /*
-    private bool set_speed(Vector3 runnigAt, bool stop)//if stop == true will stop on the point is running, if not, will not stop
+
+    private bool is_Contact(Vector3 looking) //Returns true if the NPC can see the poitn at a max distance
+    {
+        Vector3 dir = looking - transform.position;
+        RaycastHit raycastHit;
+        if (Physics.Raycast(transform.position, dir, out raycastHit) && raycastHit.transform.CompareTag("Player"))
+        {
+            _lastPos = raycastHit.point;
+            return true;
+        }
+
+        return false;
+    }
+    private void set_speed(Vector3 runnigAt)//if stop == true will stop on the point is running, if not, will not stop
     {
         //Changes speed direction to go to the runningPoint
-
+        runnigAt.y = transform.position.y;
         Vector3 position = transform.position;
         Vector3 desired = runnigAt - position;
         Vector3 steering = desired - rb.velocity;
+        Debug.DrawRay(position,desired,Color.blue);
         Debug.DrawRay(position,steering.normalized * _vel,Color.red);
-        steering.Normalize();
-        if (Vector3.Angle(desired, steering) < 30 || (stop && (transform.position - runnigAt).magnitude < 10))
+        if (Vector3.Angle(desired, steering) < 30 && Vector3.Distance(runnigAt,position) > 1)
         {
-            //Debug.Log(steering);
-            _movDir = steering;
-            rb.AddForce(steering * _vel);
+            rb.AddForce(-steering.normalized * _vel);
+            //_movDir = steering.normalized;
         }
-        else
-        {
-            rb.AddForce(_movDir * _vel);
-            //rb.AddForce(desired.normalized * _vel);
-        }
-        //Debug.Log("D: " + desired);
-        Rotate(runnigAt);
-        return Math.Abs((transform.position - runnigAt).magnitude) < 0.2f;
-    }*/
+        else if(rb.velocity.magnitude < 5)
+            rb.AddForce(-desired.normalized * _vel);
+
+    }
 
     protected void MoveTo(Vector3 target, float minSpeed)
     {
@@ -262,7 +275,7 @@ public class NPC : MonoBehaviour
 
     private void Rotate(Vector3 target)
     {
-        Debug.Log(rb.velocity);
+        //Debug.Log(rb.velocity);
         if (movementSpeed != 0)
         {
             Vector3 goal = new Vector3(target.x, transform.position.y, target.z);
@@ -332,21 +345,26 @@ public class NPC : MonoBehaviour
     }
     private IEnumerator FollowPath(Vector3[] path)
     {
-        chasingPath = true;
-        Debug.Log("I end up calcing");
+        _followingP = true;
         foreach (Vector3 coord in path)
         {
-            Debug.Log(coord);
-            
-            while (DistanceLessThan(0.002f, coord))
+
+            while (Vector3.Distance(coord, transform.position) > 1.8f)
             {
-                Set_speed(coord);
-                Debug.Log(coord);
                 yield return new WaitForFixedUpdate();
+                is_Contact(_player.position);
+                set_speed(coord);
+                if(_lastPos == Vector3.up)
+                    Rotate(coord);
+                if (_dist < 1.8f && is_Contact(_player.position))
+                {
+                    _followingP = false;
+                    break;
+                }
             }
         }
 
-        //chasingPath = false;
+        _followingP = false;
     }
     
 }
