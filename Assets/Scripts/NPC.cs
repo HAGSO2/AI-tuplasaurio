@@ -59,8 +59,7 @@ public class NPC : MonoBehaviour
 
     //private Queue<Vector3> _pendingPositions;
     //private Vector3 lastPos;
-    [SerializeField] private GameEnding gameEnding; 
-    private 
+    [SerializeField] private GameEnding gameEnding;  
     
     private bool isPatrolling = true;
     private bool isInvestigating = false;
