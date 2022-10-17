@@ -262,7 +262,8 @@ public class NPC : MonoBehaviour
 
     private void Rotate(Vector3 target)
     {
-        if (rb.velocity != Vector3.zero)
+        Debug.Log(rb.velocity);
+        if (movementSpeed != 0)
         {
             Vector3 goal = new Vector3(target.x, transform.position.y, target.z);
 
