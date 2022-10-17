@@ -1017,11 +1017,11 @@ MonoBehaviour:
   movementSpeed: 2
   turnSpeed: 8
   stoppedMaxTime: 1
-  viewRange: 50
-  maximumDistanceCheck: 5
+  _investigationMaxRange: 15
+  _investigationMinRange: 8
   layerMaskForInvestigation:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 256
   player: {fileID: 1020154975}
   gameEnding: {fileID: 0}
 --- !u!54 &1252031511
@@ -1173,7 +1173,7 @@ GameObject:
   - component: {fileID: 1560040097}
   - component: {fileID: 1560040096}
   - component: {fileID: 1560040095}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Floor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
