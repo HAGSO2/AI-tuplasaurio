@@ -1014,8 +1014,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   waypointContainer: {fileID: 641188838}
   obs: {fileID: 1017815746}
-  movementSpeed: 1
-  turnSpeed: 1
+  movementSpeed: 2
+  turnSpeed: 8
   stoppedMaxTime: 1
   viewRange: 50
   maximumDistanceCheck: 5

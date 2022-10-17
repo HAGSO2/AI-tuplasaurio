@@ -65,7 +65,7 @@ public class NPC : MonoBehaviour
 
     protected void Start()
     {
-        /*_path = GetComponent<Pathfinding>();
+        _path = GetComponent<Pathfinding>();
         chasingPath = false;
         stoppedTimer = 0;
         chosenWaypoint = 0;
@@ -84,7 +84,7 @@ public class NPC : MonoBehaviour
         
 
         _waypoints[chosenWaypoint].gameObject.SetActive(true);
-        obs.onSeePlayer.AddListener(StartChase);*/
+        obs.onSeePlayer.AddListener(StartChase);
     }
 
     //Patrol --> Chase
@@ -125,14 +125,14 @@ public class NPC : MonoBehaviour
 
     protected void FixedUpdate()
     {
-        /*if(isPatrolling)
+        if(isPatrolling)
             Patrolling();
         else if(isInvestigating)
             Investigating();
         else if(isChasing)
             Chasing();
-        //Debug.Log(rb.velocity);*/
-        Set_speed(new Vector3(20,0,20));
+        //Debug.Log(rb.velocity);
+        //Set_speed(new Vector3(20,0,20));
     }
     
 
@@ -140,7 +140,7 @@ public class NPC : MonoBehaviour
     {
         if (!stopped)
         {
-            MoveTo(_waypoints[chosenWaypoint].position);
+            MoveTo(_waypoints[chosenWaypoint].position, 1f);
         }
         else
         {
@@ -168,7 +168,7 @@ public class NPC : MonoBehaviour
             }
             else    // WHEN A DIRECTION IS CHOSEN, MOVE TOWARDS THE OBJECTIVE
             {
-                MoveTo(targetPoint);
+                MoveTo(targetPoint, 0f);
                 if (DistanceLessThan(0.8f, targetPoint))
                 {
                     
@@ -230,12 +230,12 @@ public class NPC : MonoBehaviour
         return Math.Abs((transform.position - runnigAt).magnitude) < 0.2f;
     }*/
 
-    protected void MoveTo(Vector3 target)
+    protected void MoveTo(Vector3 target, float minSpeed)
     {
         if (!isChasing)
         {
             if (DistanceLessThan(0.75f, target))
-                movementSpeed = isPatrolling ? 1:0;
+                movementSpeed = minSpeed;
             else
                 movementSpeed = 2;
         }
