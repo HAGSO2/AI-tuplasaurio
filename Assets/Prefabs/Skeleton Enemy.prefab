@@ -2154,7 +2154,7 @@ MonoBehaviour:
   _viewRange: 45
   layerMaskForInvestigation:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 256
   _player: {fileID: 0}
   _vel: 1.1
   gameEnding: {fileID: 0}

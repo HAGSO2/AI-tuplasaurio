@@ -97,6 +97,7 @@ public class NPC : MonoBehaviour
         isPatrolling = false;
         isInvestigating = false;
         investigationPointChosen = false;
+        waypointReached = true;
         isChasing = true;
     }
     
@@ -168,13 +169,17 @@ public class NPC : MonoBehaviour
         if (!investigationPointChosen)    // WHEN INVESTIGATING CHOSE A DIRECTION
         {
             walkPoint = GetInvestigationPoint();
-
             //ChooseRandomDirection();
             // Check if this random direction is valid
-            if (Physics.Raycast(walkPoint, -transform.up, 8f, layerMaskForInvestigation))
+            if (Physics.Raycast(walkPoint + Vector3.up, -transform.up, 20f, layerMaskForInvestigation))
             {
                 investigationPointChosen = true;
                 investigationPoints = _pathfinding.FindPath(transform.position, walkPoint);
+            }
+            else
+            {
+                Debug.Log("HELP");
+                Debug.Log(walkPoint);
             }
         }
         else

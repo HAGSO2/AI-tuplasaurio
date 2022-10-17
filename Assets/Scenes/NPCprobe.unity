@@ -991,7 +991,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1252031508}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.23571476, y: 0.8385812, z: 0.0052683353}
+  m_LocalPosition: {x: 0.74, y: 0.8385812, z: -7.14}
   m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -1017,12 +1017,14 @@ MonoBehaviour:
   movementSpeed: 2
   turnSpeed: 8
   stoppedMaxTime: 1
-  _investigationMaxRange: 15
-  _investigationMinRange: 8
+  _investigationMaxDistance: 15
+  _investigationMinDistance: 5
+  _viewRange: 45
   layerMaskForInvestigation:
     serializedVersion: 2
     m_Bits: 256
-  player: {fileID: 1020154975}
+  _player: {fileID: 1020154975}
+  _vel: 0
   gameEnding: {fileID: 0}
 --- !u!54 &1252031511
 Rigidbody:
@@ -1772,7 +1774,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8593400155576067534, guid: 20acd1a474e02a14a86e818545d603ea, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.07
+      value: 0.69
       objectReference: {fileID: 0}
     - target: {fileID: 8593400155576067534, guid: 20acd1a474e02a14a86e818545d603ea, type: 3}
       propertyPath: m_LocalPosition.y
@@ -1780,7 +1782,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8593400155576067534, guid: 20acd1a474e02a14a86e818545d603ea, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 2.511
+      value: 13.48
       objectReference: {fileID: 0}
     - target: {fileID: 8593400155576067534, guid: 20acd1a474e02a14a86e818545d603ea, type: 3}
       propertyPath: m_LocalRotation.w

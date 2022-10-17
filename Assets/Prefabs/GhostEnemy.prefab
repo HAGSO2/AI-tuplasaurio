@@ -241,7 +241,7 @@ PrefabInstance:
       objectReference: {fileID: 2584163050839100399}
     - target: {fileID: 1819043530545287941, guid: 3547d9e7fd71e3c48ab1df998351c5a8, type: 3}
       propertyPath: layerMaskForInvestigation.m_Bits
-      value: 64
+      value: 256
       objectReference: {fileID: 0}
     - target: {fileID: 4568126746562425038, guid: 3547d9e7fd71e3c48ab1df998351c5a8, type: 3}
       propertyPath: player
