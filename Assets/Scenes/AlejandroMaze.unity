@@ -44552,6 +44552,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1894281941}
     - target: {fileID: 1251766197374843241, guid: ec7cf8572e3aff546af9e27e22721dd3, type: 3}
+      propertyPath: _player
+      value: 
+      objectReference: {fileID: 1894281941}
+    - target: {fileID: 1251766197374843241, guid: ec7cf8572e3aff546af9e27e22721dd3, type: 3}
       propertyPath: turnSpeed
       value: 10
       objectReference: {fileID: 0}
@@ -44689,7 +44693,15 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1894281941}
     - target: {fileID: 8769068729629638397, guid: fcb549dc7e9dcdc42836235d5515b74e, type: 3}
+      propertyPath: _vel
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 8769068729629638397, guid: fcb549dc7e9dcdc42836235d5515b74e, type: 3}
       propertyPath: player
+      value: 
+      objectReference: {fileID: 1894281941}
+    - target: {fileID: 8769068729629638397, guid: fcb549dc7e9dcdc42836235d5515b74e, type: 3}
+      propertyPath: _player
       value: 
       objectReference: {fileID: 1894281941}
     - target: {fileID: 8769068729629638397, guid: fcb549dc7e9dcdc42836235d5515b74e, type: 3}
