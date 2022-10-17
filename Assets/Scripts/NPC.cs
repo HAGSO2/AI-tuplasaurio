@@ -62,8 +62,6 @@ public class NPC : MonoBehaviour
     [SerializeField] private GameEnding gameEnding; 
     private 
     
-    bool investigationDirectionChosen = false;
-
     private bool isPatrolling = true;
     private bool isInvestigating = false;
     private bool isChasing = false;
