@@ -9,13 +9,16 @@ using Random = UnityEngine.Random;
 [RequireComponent(typeof(Rigidbody))]
 public class NPC : MonoBehaviour
 {
-    private Pathfinding _path;
+    private Pathfinding _pathfinding;
     
     [Header("Patrolling")]
     [SerializeField] private Transform waypointContainer;
     private Transform[] _waypoints;
     private int chosenWaypoint;
     public Observer obs;
+    private bool waypointReached = true;
+    private Vector3[] toWaypoint;
+    private int toWaypointIndex = 0;
 
     [SerializeField]
     private float movementSpeed;
@@ -35,17 +38,15 @@ public class NPC : MonoBehaviour
     
     [Header("Investigation")]
     [Tooltip("Choose view range")]
-    [SerializeField] float viewRange = 40;
-    [SerializeField] float maximumDistanceCheck = 5;
+    [SerializeField] private float _investigationMaxRange = 15;
+    [SerializeField] private float _investigationMinRange = 8;
 
-    [Tooltip("Select the layer you want the NPC to avoid")]
+    [Tooltip("Select the layer you want the NPC to use")]
     [SerializeField] LayerMask layerMaskForInvestigation;
-
-    Vector3 minimumDirection;
-    Vector3 maximumDirection;
-
-    Vector3 randomDirection;
-    Vector3 targetPoint;
+    private bool investigationPointChosen = false;
+    private Vector3 walkPoint;
+    private Vector3[] investigationPoints;
+    private int _investigationIndex;
 
 
     [FormerlySerializedAs("player")]
@@ -69,7 +70,7 @@ public class NPC : MonoBehaviour
 
     protected void Start()
     {
-        _path = GetComponent<Pathfinding>();
+        _pathfinding = GetComponent<Pathfinding>();
         _followingP = false;
         stoppedTimer = 0;
         chosenWaypoint = 0;
@@ -115,8 +116,11 @@ public class NPC : MonoBehaviour
     {
         Debug.Log("Finished investigating");
         Debug.Log("Start Patrol");
-        //obs.m_MyEvent.AddListener(SeePlayer);
-        investigationDirectionChosen = false;
+
+        waypointReached = false;
+        toWaypoint = _pathfinding.FindPath(transform.position, _waypoints[chosenWaypoint].position);
+
+        investigationPointChosen = false;
         isInvestigating = false;
         isPatrolling = true;
     }
@@ -132,46 +136,58 @@ public class NPC : MonoBehaviour
         //Debug.Log(rb.velocity);
         //Set_speed(new Vector3(20,0,20));
     }
-    
+
 
     private void Patrolling()
     {
-        if (!stopped)
+        if (waypointReached)
         {
-            MoveTo(_waypoints[chosenWaypoint].position, 1f);
+            if (!stopped)
+            {
+                MoveTo(_waypoints[chosenWaypoint].position, 1f);
+            }
+            else
+            {
+                stoppedTimer += Time.deltaTime;
+                if (stoppedTimer >= stoppedMaxTime)
+                    stopped = false;
+            }
         }
         else
         {
-            stoppedTimer += Time.deltaTime;
-            if (stoppedTimer >= stoppedMaxTime)
-                stopped = false;
+            if (toWaypointIndex < toWaypoint.Length)
+            {
+                MoveToWithPathFinding(ref toWaypoint, ref toWaypointIndex);
+            }
+            else
+            {
+                waypointReached = true;
+            }
         }
     }
     void Investigating()
     {
-        if(isInvestigating)
+        if (!investigationPointChosen)    // WHEN INVESTIGATING CHOSE A DIRECTION
         {
-            if (!investigationDirectionChosen)    // WHEN INVESTIGATING CHOSE A DIRECTION
-            {
-                ChooseRandomDirection();
-                // Check if this random direction is valid
-                if (!Physics.Raycast(transform.position, randomDirection, maximumDistanceCheck, layerMaskForInvestigation))
-                {
-                    targetPoint = transform.position + randomDirection * maximumDistanceCheck;
+            walkPoint = GetInvestigationPoint();
 
-                    investigationDirectionChosen = true;
-                    //Debug.Log("Direction Chosen!");
-                    //Debug.Log(targetPoint);
-                }
-            }
-            else    // WHEN A DIRECTION IS CHOSEN, MOVE TOWARDS THE OBJECTIVE
+            //ChooseRandomDirection();
+            // Check if this random direction is valid
+            if (Physics.Raycast(walkPoint, -transform.up, 8f, layerMaskForInvestigation))
             {
-                MoveTo(targetPoint, 0f);
-                if (DistanceLessThan(0.8f, targetPoint))
-                {
-                    
-                    EndInvestigation();
-                }
+                investigationPointChosen = true;
+                investigationPoints = _pathfinding.FindPath(transform.position, walkPoint);
+            }
+        }
+        else
+        {
+            if (_investigationIndex < investigationPoints.Length)
+            {
+                MoveToWithPathFinding(ref investigationPoints, ref _investigationIndex);
+            }
+            else
+            {
+                EndInvestigation();
             }
         }
     }
@@ -194,7 +210,7 @@ public class NPC : MonoBehaviour
 
         if (!_followingP && is_Contact(_player.position))
         {
-            Vector3[] path = _path.FindPath(transform.position, _player.position);
+            Vector3[] path = _pathfinding.FindPath(transform.position, _player.position);
             StartCoroutine(FollowPath(path));
             //CreateRefs(path);
             //FollowPath(_pathfinding.FindPath(transform.position,_target.position));
@@ -202,7 +218,7 @@ public class NPC : MonoBehaviour
         else if(!_followingP && _lastPos != Vector3.up)
         {
             Debug.Log("Search on: " + _lastPos);
-            Vector3[] path = _path.FindPath(transform.position, _lastPos);
+            Vector3[] path = _pathfinding.FindPath(transform.position, _lastPos);
             StartCoroutine(FollowPath(path));
             //CreateRefs(path);
             _lastPos = Vector3.up;
@@ -256,6 +272,24 @@ public class NPC : MonoBehaviour
         Rotate(target);
 
         rb.MovePosition(transform.position + transform.forward * Time.fixedDeltaTime * movementSpeed);
+    }
+
+    private void MoveToWithPathFinding(ref Vector3[] points, ref int index)
+    {
+        MoveTo(points[index], 2f);
+        if (DistanceLessThan(0.35f, points[index]))
+        {
+            index++;
+        }
+    }
+
+    private Vector3 GetInvestigationPoint()
+    {
+        //Calculate random point in range
+        float randomZ = Random.Range(3f, _investigationMaxRange);
+        float randomX = Random.Range(-_investigationMaxRange, _investigationMaxRange);
+
+        return new Vector3(transform.position.x + randomX, transform.position.y, transform.position.z + randomZ);
     }
 
     private void Set_speed(Vector3 running)
@@ -315,34 +349,16 @@ public class NPC : MonoBehaviour
         }
     }
     
-    void ChooseRandomDirection()
-    {
-        Debug.Log("Chosing direction...");
-        float randomAngle = Random.Range(-viewRange / 2, viewRange / 2);
-        randomDirection = Quaternion.AngleAxis(randomAngle, Vector3.up) * transform.forward;
-    }
 
-
-    // GIZMO STUFF Visual feedback in editor for easy tweaking of values
-    private void OnValidate()
-    {
-        minimumDirection = Quaternion.AngleAxis(-viewRange / 2, Vector3.up) * transform.forward;
-        maximumDirection = Quaternion.AngleAxis(viewRange / 2, Vector3.up) * transform.forward;
-    }
     
     private void OnDrawGizmosSelected()
     {
-        Gizmos.DrawRay(transform.position, transform.forward * maximumDistanceCheck);
-
-        Gizmos.color = Color.cyan;
-        Gizmos.DrawRay(transform.position, minimumDirection * maximumDistanceCheck);
-
-        Gizmos.color = Color.cyan;
-        Gizmos.DrawRay(transform.position, maximumDirection * maximumDistanceCheck);
-
-        Gizmos.color = Color.red;
-        Gizmos.DrawRay(transform.position, randomDirection * maximumDistanceCheck);
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, _investigationMaxRange);
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireSphere(transform.position, _investigationMinRange);
     }
+
     private IEnumerator FollowPath(Vector3[] path)
     {
         _followingP = true;
