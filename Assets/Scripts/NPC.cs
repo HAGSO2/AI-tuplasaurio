@@ -169,7 +169,8 @@ public class NPC : MonoBehaviour
         if (!investigationPointChosen)    // WHEN INVESTIGATING CHOSE A DIRECTION
         {
             walkPoint = GetInvestigationPoint();
-            //ChooseRandomDirection();
+            Debug.Log(walkPoint);
+   
             // Check if this random direction is valid
             if (Physics.Raycast(walkPoint + Vector3.up, -transform.up, 20f, layerMaskForInvestigation))
             {
@@ -292,7 +293,7 @@ public class NPC : MonoBehaviour
        // Choose a random direction and then choose a random point in the range
         Vector3 randomDirection = ChooseRandomDirection();
 
-        return randomDirection * Random.Range(_investigationMinDistance, _investigationMaxDistance);
+        return transform.position + randomDirection * Random.Range(_investigationMinDistance, _investigationMaxDistance);
     }
     Vector3 ChooseRandomDirection()
     {
