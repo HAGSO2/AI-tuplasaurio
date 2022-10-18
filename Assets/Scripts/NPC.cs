@@ -15,7 +15,6 @@ public class NPC : MonoBehaviour
     [SerializeField] private Transform waypointContainer;
     private Transform[] _waypoints;
     private int chosenWaypoint;
-    public Observer obs;
     private bool waypointReached = true;
     private Vector3[] toWaypoint;
     private int toWaypointIndex = 0;
@@ -87,7 +86,6 @@ public class NPC : MonoBehaviour
         
 
         _waypoints[chosenWaypoint].gameObject.SetActive(true);
-        obs.onSeePlayer.AddListener(StartChase);
     }
 
     //Patrol --> Chase
@@ -163,6 +161,28 @@ public class NPC : MonoBehaviour
                 waypointReached = true;
             }
         }
+        Seek_For_Player();
+
+    }
+
+    void Seek_For_Player()
+    {
+        RaycastHit raycastHit;
+        if (Physics.Raycast(transform.position, _player.position - transform.position, out raycastHit) &&
+            raycastHit.transform.CompareTag("Player"))
+        {
+            //Debug.Log(Vector3.Angle(transform.forward,raycastHit.point - transform.position));
+            if (Vector3.Angle(transform.forward, raycastHit.point - transform.position) < 60)
+            {
+                StartChase();
+                Debug.DrawLine(transform.position, raycastHit.point, Color.green);
+            }
+            else
+                Debug.DrawLine(transform.position,raycastHit.point,Color.yellow);
+                
+        }
+        else
+            Debug.DrawLine(transform.position,raycastHit.point,Color.red);
     }
     void Investigating()
     {
@@ -201,35 +221,28 @@ public class NPC : MonoBehaviour
         //Debug.Log(_dist);
         if(_lastPos != Vector3.up)
             Rotate(_player.position);
-        if (_dist < 2.8f && is_Contact(_player.position))
+        if (_dist < 1.8f && is_Contact(_player.position))
         {
-            set_speed(_player.position);
+            MoveTo(_player.position,1);
             if (_dist < 0.3f)
             {
-                //Debug.Log("Player chased");
-                //Destroy(this);
+                Debug.Log("Player chased");
                 gameEnding.CaughtPlayer();
             }
         }
-
-        if (!_followingP && is_Contact(_player.position))
+        else if (!_followingP)
         {
             Vector3[] path = _pathfinding.FindPath(transform.position, _player.position);
-            StartCoroutine(FollowPath(path));
-            //CreateRefs(path);
-            //FollowPath(_pathfinding.FindPath(transform.position,_target.position));
+            if(is_Contact(_player.position))
+                StartCoroutine(FollowPath(path));
+            else if (_lastPos != Vector3.up)
+            {
+                StartCoroutine(FollowPath(path));
+                _lastPos = Vector3.up;
+            }
+            else if(!_followingP && _lastPos == Vector3.up)
+                LostPlayer();
         }
-        else if(!_followingP && _lastPos != Vector3.up)
-        {
-            Debug.Log("Search on: " + _lastPos);
-            Vector3[] path = _pathfinding.FindPath(transform.position, _lastPos);
-            StartCoroutine(FollowPath(path));
-            //CreateRefs(path);
-            _lastPos = Vector3.up;
-        }
-        else if(!_followingP && _lastPos == Vector3.up)
-            //Destroy(this);
-            LostPlayer();
     }
 
     private bool is_Contact(Vector3 looking) //Returns true if the NPC can see the poitn at a max distance
@@ -304,16 +317,6 @@ public class NPC : MonoBehaviour
         return Quaternion.AngleAxis(randomAngle, Vector3.up) * transform.forward;
     }
 
-    private void Set_speed(Vector3 running)
-    {
-        //Debug.Log("Running");
-        Vector3 desired = running - transform.position;
-        Vector3 steering = desired - rb.velocity;
-        steering.Normalize();
-        //Debug.Log(steering);
-        rb.MovePosition(steering);
-    }
-
     protected bool DistanceLessThan(float distance, Vector3 target)
     {
         return Vector3.Distance(target, transform.position) < distance;
@@ -383,7 +386,7 @@ public class NPC : MonoBehaviour
             {
                 yield return new WaitForFixedUpdate();
                 is_Contact(_player.position);
-                set_speed(coord);
+                MoveTo(coord,1);
                 if(_lastPos == Vector3.up)
                     Rotate(coord);
                 if (_dist < 1.8f && is_Contact(_player.position))
