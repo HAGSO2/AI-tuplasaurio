@@ -10,6 +10,8 @@ using Random = UnityEngine.Random;
 public class NPC : MonoBehaviour
 {
     private Pathfinding _pathfinding;
+    public Transform reference;
+    private List<Transform> references;
     [SerializeField] protected EnemiesManager _manager;
     
     [Header("Patrolling")]
@@ -87,6 +89,7 @@ public class NPC : MonoBehaviour
         
 
         _waypoints[chosenWaypoint].gameObject.SetActive(true);
+        _lastPos = Vector3.up;
     }
 
     //Patrol --> Chase
@@ -162,28 +165,9 @@ public class NPC : MonoBehaviour
                 waypointReached = true;
             }
         }
-        Seek_For_Player();
+        if(IsContact(_player.position))
+            StartChase();
 
-    }
-
-    void Seek_For_Player()
-    {
-        RaycastHit raycastHit;
-        if (Physics.Raycast(transform.position, _player.position - transform.position, out raycastHit) &&
-            raycastHit.transform.CompareTag("Player"))
-        {
-            //Debug.Log(Vector3.Angle(transform.forward,raycastHit.point - transform.position));
-            if (Vector3.Angle(transform.forward, raycastHit.point - transform.position) < 60)
-            {
-                StartChase();
-                Debug.DrawLine(transform.position, raycastHit.point, Color.green);
-            }
-            else
-                Debug.DrawLine(transform.position,raycastHit.point,Color.yellow);
-                
-        }
-        else
-            Debug.DrawLine(transform.position,raycastHit.point,Color.red);
     }
     void Investigating()
     {
@@ -218,48 +202,46 @@ public class NPC : MonoBehaviour
     }
     void Chasing()
     {
-        _dist = Vector3.Distance(transform.position, _player.position);
-        //Debug.Log(_dist);
-        if(_lastPos != Vector3.up)
-            Rotate(_player.position);
-        if (_dist < 1.8f && IsContact(_player.position))
+        if (IsContact(_player.position))
         {
-            MoveTo(_player.position,1);
-            if (_dist < 0.3f)
+            if (!_followingP)
             {
-                Debug.Log("Player chased");
-                gameEnding.CaughtPlayer();
-            }
-        }
-        else if (!_followingP)
-        {
-            _pathfinding.FindPath(transform.position, _player.position);
-            //Vector3[] path = 
-            if(IsContact(_player.position))
-                StartCoroutine(FollowPath(_pathfinding.finalPath));
-            else if (_lastPos != Vector3.up)
-            {
+                Debug.Log("Going to: " + _lastPos);
+                _pathfinding.FindPath(transform.position, _lastPos);
                 StartCoroutine(FollowPath(_pathfinding.finalPath));
                 _lastPos = Vector3.up;
             }
-            //else if(!_followingP && _lastPos == Vector3.up)
-                //LostPlayer();
+        }
+        else if (!_followingP && _lastPos != Vector3.up)
+        {
+            Debug.Log("Going to: " + _lastPos);
+            _pathfinding.FindPath(
+                transform.position,
+                _lastPos);
+            StartCoroutine(FollowPath(_pathfinding.finalPath));
+            _lastPos = Vector3.up;
+        }
+        else
+        {
+            Debug.Log("I've lossen the playar");
         }
     }
 
-    private bool IsContact(Vector3 looking) //Returns true if the NPC can see the poitn at a max distance
+    protected bool IsContact(Vector3 looking) //Returns true if the NPC can see the poitn at a max distance
     {
         Vector3 dir = looking - transform.position;
         RaycastHit raycastHit;
         if (Physics.Raycast(transform.position, dir, out raycastHit) && raycastHit.transform.CompareTag("Player"))
         {
-            _lastPos = raycastHit.point;
-            return true;
+            if (Vector3.Angle(transform.forward, dir) < 60)
+            {
+                _lastPos = looking;
+                return true;
+            }
         }
-
         return false;
     }
-    private void set_speed(Vector3 runnigAt)//if stop == true will stop on the point is running, if not, will not stop
+    /*private void set_speed(Vector3 runnigAt)//if stop == true will stop on the point is running, if not, will not stop
     {
         //Changes speed direction to go to the runningPoint
         runnigAt.y = transform.position.y;
@@ -276,7 +258,7 @@ public class NPC : MonoBehaviour
         else if(rb.velocity.magnitude < 5)
             rb.AddForce(-desired.normalized * _vel);
 
-    }
+    }*/
 
     protected void MoveTo(Vector3 target, float minSpeed)
     {
@@ -381,31 +363,33 @@ public class NPC : MonoBehaviour
     private IEnumerator FollowPath(List<Node> path)
     {
         _followingP = true;
+        EntendiLaReferencia(path);
         foreach (Node coord in path)
         {
-            while (Vector3.Distance(coord.position, transform.position) > 1.8f)
+            while (Vector3.Distance(coord.position, transform.position) > 0.8f)
             {
-                yield return new WaitForFixedUpdate();
-                IsContact(_player.position);
                 MoveTo(coord.position,1);
-                if(_lastPos == Vector3.up)
-                    Rotate(coord.position);
-                if (_dist < 1.8f && IsContact(_player.position))
-                {
-                    _followingP = false;
-                    break;
-                }
+                yield return new WaitForFixedUpdate();
             }
         }
-
         _followingP = false;
+    }
+
+    private void EntendiLaReferencia(List<Node> path)
+    {
+        references = new List<Transform>(path.Count);
+        foreach (Node coord in path)
+        {
+            references.Add(Instantiate(reference));
+            references[^1].position = coord.position;
+        }
     }
 
     public void goToComunicatedLocation(Vector3 position) //Comentar por si se podria usar la funcion chasing o otra que ya haga esto
     {
         //Vector3[] path = 
-        _pathfinding.FindPath(transform.position, position);
-        StartCoroutine(FollowPath(_pathfinding.finalPath));
+        //_pathfinding.FindPath(transform.position, position);
+        //StartCoroutine(FollowPath(_pathfinding.finalPath));
     }
     
 }
