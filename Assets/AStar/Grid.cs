@@ -5,6 +5,7 @@ using UnityEngine;
 public class Grid : MonoBehaviour
 {
     public LayerMask WallMask;
+    public LayerMask AtravesableWallMask;
     public Vector2 gridWorldSize;
     public float nodeRadius;
     public float distance;
@@ -33,11 +34,16 @@ public class Grid : MonoBehaviour
         for (int x = 0; x < gridSizeX; x++){
             for (int y = 0; y < gridSizeY; y++){
                 Vector3 worldPoint = bottomLeft + Vector3.right * (x * nodeDiameter + nodeRadius) + Vector3.forward * (y * nodeDiameter + nodeRadius);
-                bool isWall = true;
+                bool isPath = true;
+                bool isAlternativePath = false;
                 if(Physics.CheckSphere(worldPoint, nodeRadius, WallMask)){
-                    isWall = false;
+                    isPath = false;
+                }else if(Physics.CheckSphere(worldPoint, nodeRadius, AtravesableWallMask)){
+                    isPath = false;
+                    isAlternativePath = true;
                 }
-                grid[x,y] = new Node(isWall,worldPoint,x,y);
+
+                grid[x,y] = new Node(isPath,isAlternativePath,worldPoint,x,y);
             }   
         }
     }
@@ -46,9 +52,12 @@ public class Grid : MonoBehaviour
         Gizmos.DrawWireCube(transform.position, new Vector3(gridWorldSize.x,1,gridWorldSize.y));
         if(grid != null){
             foreach(Node node in grid){
-                if(node.isWall){
+                if(node.isPath){
                     Gizmos.color = Color.green;
-                }else{
+                }else if(node.isAlternativePath){
+                    Gizmos.color = Color.yellow;
+                }
+                else{
                     Gizmos.color = Color.red;
                 }
 

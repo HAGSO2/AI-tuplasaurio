@@ -6,6 +6,7 @@ public class Pathfinding : MonoBehaviour
 {
     Grid grid;
     public Transform targetPos;
+    public bool EnableAlternativePath;
     public List<Node> finalPath;
 
     private void Awake(){
@@ -47,7 +48,7 @@ public class Pathfinding : MonoBehaviour
             //Search neighbors on eight directions
             foreach (Node child in grid.GetNeighborNodes(currentNode)){
                 int tentative_gScore = currentNode.gCost + GetEucledianDistance(currentNode, child);
-                if(tentative_gScore < child.gCost && child.isWall){
+                if(tentative_gScore < child.gCost && (child.isPath || (EnableAlternativePath && child.isAlternativePath))){
                     child.parent = currentNode;
                     child.gCost = tentative_gScore;
                     child.hCost = GetEucledianDistance(child, grid.NodeFromWorldPosition(targetPosition));
