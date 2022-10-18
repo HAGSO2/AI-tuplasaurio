@@ -222,7 +222,7 @@ public class NPC : MonoBehaviour
         //Debug.Log(_dist);
         if(_lastPos != Vector3.up)
             Rotate(_player.position);
-        if (_dist < 1.8f && is_Contact(_player.position))
+        if (_dist < 1.8f && IsContact(_player.position))
         {
             MoveTo(_player.position,1);
             if (_dist < 0.3f)
@@ -234,7 +234,7 @@ public class NPC : MonoBehaviour
         else if (!_followingP)
         {
             Vector3[] path = _pathfinding.FindPath(transform.position, _player.position);
-            if(is_Contact(_player.position))
+            if(IsContact(_player.position))
                 StartCoroutine(FollowPath(path));
             else if (_lastPos != Vector3.up)
             {
@@ -246,7 +246,7 @@ public class NPC : MonoBehaviour
         }
     }
 
-    private bool is_Contact(Vector3 looking) //Returns true if the NPC can see the poitn at a max distance
+    private bool IsContact(Vector3 looking) //Returns true if the NPC can see the poitn at a max distance
     {
         Vector3 dir = looking - transform.position;
         RaycastHit raycastHit;
@@ -386,11 +386,11 @@ public class NPC : MonoBehaviour
             while (Vector3.Distance(coord, transform.position) > 1.8f)
             {
                 yield return new WaitForFixedUpdate();
-                is_Contact(_player.position);
+                IsContact(_player.position);
                 MoveTo(coord,1);
                 if(_lastPos == Vector3.up)
                     Rotate(coord);
-                if (_dist < 1.8f && is_Contact(_player.position))
+                if (_dist < 1.8f && IsContact(_player.position))
                 {
                     _followingP = false;
                     break;
