@@ -44724,6 +44724,10 @@ PrefabInstance:
       propertyPath: player
       value: 
       objectReference: {fileID: 1894281941}
+    - target: {fileID: 5868586856470143594, guid: fcb549dc7e9dcdc42836235d5515b74e, type: 3}
+      propertyPath: gameEnding
+      value: 
+      objectReference: {fileID: 1547410920}
     - target: {fileID: 8769068729629638397, guid: fcb549dc7e9dcdc42836235d5515b74e, type: 3}
       propertyPath: _vel
       value: 15
