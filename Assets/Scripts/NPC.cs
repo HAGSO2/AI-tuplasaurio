@@ -233,16 +233,17 @@ public class NPC : MonoBehaviour
         }
         else if (!_followingP)
         {
-            Vector3[] path = _pathfinding.FindPath(transform.position, _player.position);
+            _pathfinding.FindPath(transform.position, _player.position);
+            //Vector3[] path = 
             if(IsContact(_player.position))
-                StartCoroutine(FollowPath(path));
+                StartCoroutine(FollowPath(_pathfinding.finalPath));
             else if (_lastPos != Vector3.up)
             {
-                StartCoroutine(FollowPath(path));
+                StartCoroutine(FollowPath(_pathfinding.finalPath));
                 _lastPos = Vector3.up;
             }
-            else if(!_followingP && _lastPos == Vector3.up)
-                LostPlayer();
+            //else if(!_followingP && _lastPos == Vector3.up)
+                //LostPlayer();
         }
     }
 
@@ -377,19 +378,18 @@ public class NPC : MonoBehaviour
         Gizmos.DrawRay(transform.position + (maximumDirection * _investigationMinDistance), maximumDirection * _investigationMaxDistance);
     }
 
-    private IEnumerator FollowPath(Vector3[] path)
+    private IEnumerator FollowPath(List<Node> path)
     {
         _followingP = true;
-        foreach (Vector3 coord in path)
+        foreach (Node coord in path)
         {
-
-            while (Vector3.Distance(coord, transform.position) > 1.8f)
+            while (Vector3.Distance(coord.position, transform.position) > 1.8f)
             {
                 yield return new WaitForFixedUpdate();
                 IsContact(_player.position);
-                MoveTo(coord,1);
+                MoveTo(coord.position,1);
                 if(_lastPos == Vector3.up)
-                    Rotate(coord);
+                    Rotate(coord.position);
                 if (_dist < 1.8f && IsContact(_player.position))
                 {
                     _followingP = false;
@@ -403,8 +403,9 @@ public class NPC : MonoBehaviour
 
     public void goToComunicatedLocation(Vector3 position) //Comentar por si se podria usar la funcion chasing o otra que ya haga esto
     {
-        Vector3[] path = _pathfinding.FindPath(transform.position, position);
-        StartCoroutine(FollowPath(path));
+        //Vector3[] path = 
+        _pathfinding.FindPath(transform.position, position);
+        StartCoroutine(FollowPath(_pathfinding.finalPath));
     }
     
 }
