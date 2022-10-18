@@ -7,8 +7,8 @@ using UnityEngine;
 public class NPC_Skeleton : NPC
 {
     private Animator _animator;
-    public static bool playerSeen = false;
-    public static Vector3 playerPosition;
+    
+    
 
     new void Start()
     {
@@ -25,17 +25,16 @@ public class NPC_Skeleton : NPC
         {
             
             //pathfinding.target = other.GameObject();
-            playerSeen = true;
             _animator.SetBool("isAttacking", true);
-            playerPosition = other.transform.position;
+            _manager.ComunicatePlayerLocation(other.transform.position);
         }
     }
-
-    private void Update()
+    
+    private void OnTriggerExit(Collider other)
     {
-        if (playerSeen)
+        if (other.CompareTag("PlayerNoise"))
         {
-            //FollowPath(pathfinding.finalPath);
+            _animator.SetBool("isAttacking", false);
         }
     }
 

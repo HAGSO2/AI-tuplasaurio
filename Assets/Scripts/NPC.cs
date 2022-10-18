@@ -10,6 +10,7 @@ using Random = UnityEngine.Random;
 public class NPC : MonoBehaviour
 {
     private Pathfinding _pathfinding;
+    [SerializeField] protected EnemiesManager _manager;
     
     [Header("Patrolling")]
     [SerializeField] private Transform waypointContainer;
@@ -398,6 +399,12 @@ public class NPC : MonoBehaviour
         }
 
         _followingP = false;
+    }
+
+    public void goToComunicatedLocation(Vector3 position) //Comentar por si se podria usar la funcion chasing o otra que ya haga esto
+    {
+        Vector3[] path = _pathfinding.FindPath(transform.position, position);
+        StartCoroutine(FollowPath(path));
     }
     
 }
