@@ -223,6 +223,8 @@ public class NPC : MonoBehaviour
         }
         else
         {
+            // This part gets called every frame, conditions are not working properly
+
             //Debug.Log("I've lost the player");
             //LostPlayer();
         }
