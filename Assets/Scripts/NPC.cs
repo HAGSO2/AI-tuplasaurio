@@ -67,7 +67,8 @@ public class NPC : MonoBehaviour
     private bool isPatrolling = true;
     private bool isInvestigating = false;
     private bool isChasing = false;
-    private bool endPath = false;
+
+    private bool endPath = false;   // True when a path finishes. Change manually to false again.
 
     protected void Start()
     {
@@ -196,21 +197,23 @@ public class NPC : MonoBehaviour
             else // When a point is chosen, walk towards it using the pathfinding
             {
                 
-                if (!_followingP)
+                if (!_followingP && !endPath) // followingP changes once following. endPath will change once it reached the end
                 {
                     _pathfinding.FindPath(transform.position, walkPoint);
                     StartCoroutine(FollowPath(_pathfinding.finalPath));
                     Debug.Log("Moving to investigation target");
                 }
-                else
+                else if(endPath)
                 {
+                    Debug.Log("Investigation path finished");
+                    endPath = false;
                     EndInvestigation();
                 }
             }
         }
         else
         {
-            //StartChase();
+            StartChase();
         }
     }
     void Chasing()
@@ -228,6 +231,7 @@ public class NPC : MonoBehaviour
 
         if (_lastPos == Vector3.up && !_followingP)
         {
+            endPath = false;
             LostPlayer();
             return;
         }
@@ -381,6 +385,7 @@ public class NPC : MonoBehaviour
     private IEnumerator FollowPath(List<Node> path)
     {
         _followingP = true;
+        endPath = false;
         EntendiLaReferencia(path);
         foreach (Node coord in path)
         {
@@ -393,8 +398,9 @@ public class NPC : MonoBehaviour
             }
             //if(!endPath)break;
         }
-        //Debug.Log("Finished Follow Path");
+        Debug.Log("Finished Follow Path");
         _followingP = false;
+        endPath = true;
     }
 
     private void EntendiLaReferencia(List<Node> path)

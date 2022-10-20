@@ -18622,7 +18622,7 @@ AudioListener:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 963194225}
-  m_Enabled: 1
+  m_Enabled: 0
 --- !u!20 &963194227
 Camera:
   m_ObjectHideFlags: 0
@@ -25286,6 +25286,10 @@ PrefabInstance:
       propertyPath: _noise
       value: 
       objectReference: {fileID: 323153787}
+    - target: {fileID: 2738497077373139825, guid: 20acd1a474e02a14a86e818545d603ea, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8593400155575843310, guid: 20acd1a474e02a14a86e818545d603ea, type: 3}
       propertyPath: m_Name
       value: PLAYER
@@ -43549,6 +43553,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: GhostEnemy
       objectReference: {fileID: 0}
+    - target: {fileID: 2281755265089132536, guid: ec7cf8572e3aff546af9e27e22721dd3, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2281755265089132537, guid: ec7cf8572e3aff546af9e27e22721dd3, type: 3}
       propertyPath: m_RootOrder
       value: 1
@@ -43748,11 +43756,11 @@ PrefabInstance:
       objectReference: {fileID: 1547410920}
     - target: {fileID: 8769068729629638397, guid: fcb549dc7e9dcdc42836235d5515b74e, type: 3}
       propertyPath: _investigationMaxDistance
-      value: 8
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 8769068729629638397, guid: fcb549dc7e9dcdc42836235d5515b74e, type: 3}
       propertyPath: _investigationMinDistance
-      value: 2
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 8769068729629638397, guid: fcb549dc7e9dcdc42836235d5515b74e, type: 3}
       propertyPath: layerMaskForInvestigation.m_Bits
