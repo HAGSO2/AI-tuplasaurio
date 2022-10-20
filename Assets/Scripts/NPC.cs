@@ -51,6 +51,8 @@ public class NPC : MonoBehaviour
     private Vector3[] investigationPoints;
     private int _investigationIndex = 0;
 
+    Coroutine investigationPath;
+
 
     [FormerlySerializedAs("player")]
     [Header("Chasing")] 
@@ -177,7 +179,7 @@ public class NPC : MonoBehaviour
     {
         if (!IsContact(_player.position))
         {
-
+            
             if (!investigationPointChosen)    // WHEN INVESTIGATING CHOOSE A DIRECTION
             {
                 walkPoint = GetInvestigationPoint();
@@ -200,7 +202,7 @@ public class NPC : MonoBehaviour
                 if (!_followingP && !endPath) // followingP changes once following. endPath will change once it reached the end
                 {
                     _pathfinding.FindPath(transform.position, walkPoint);
-                    StartCoroutine(FollowPath(_pathfinding.finalPath));
+                    investigationPath = StartCoroutine(FollowPath(_pathfinding.finalPath));
                     Debug.Log("Moving to investigation target");
                 }
                 else if(endPath)
@@ -213,6 +215,7 @@ public class NPC : MonoBehaviour
         }
         else
         {
+            StopCoroutine(investigationPath);
             StartChase();
         }
     }
