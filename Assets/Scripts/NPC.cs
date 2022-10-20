@@ -49,7 +49,7 @@ public class NPC : MonoBehaviour
     private bool investigationPointChosen = false;
     private Vector3 walkPoint;
     private Vector3[] investigationPoints;
-    private int _investigationIndex;
+    private int _investigationIndex = 0;
 
 
     [FormerlySerializedAs("player")]
@@ -67,6 +67,7 @@ public class NPC : MonoBehaviour
     private bool isPatrolling = true;
     private bool isInvestigating = false;
     private bool isChasing = false;
+    private bool endPath = false;
 
     protected void Start()
     {
@@ -115,10 +116,12 @@ public class NPC : MonoBehaviour
     //Investigation --> Patrol
     void EndInvestigation() // Only executed when NPC is bored
     {
+        isChasing = false;
         Debug.Log("Finished investigating");
         Debug.Log("Start Patrol");
 
         waypointReached = false;
+        toWaypointIndex = 0;
         toWaypoint = _pathfinding.FindPath(transform.position, _waypoints[chosenWaypoint].position);
 
         investigationPointChosen = false;
@@ -171,33 +174,43 @@ public class NPC : MonoBehaviour
     }
     void Investigating()
     {
-        if (!investigationPointChosen)    // WHEN INVESTIGATING CHOSE A DIRECTION
+        if (!IsContact(_player.position))
         {
-            walkPoint = GetInvestigationPoint();
-            Debug.Log(walkPoint);
-   
-            // Check if this random direction is valid
-            if (Physics.Raycast(walkPoint + Vector3.up, -transform.up, 20f, layerMaskForInvestigation))
+
+            if (!investigationPointChosen)    // WHEN INVESTIGATING CHOOSE A DIRECTION
             {
-                investigationPointChosen = true;
-                investigationPoints = _pathfinding.FindPath(transform.position, walkPoint);
+                walkPoint = GetInvestigationPoint();
+
+                // Check if this random direction is valid
+                if (Physics.Raycast(walkPoint + Vector3.up, -transform.up, 20f, layerMaskForInvestigation))
+                {
+                    Debug.Log(walkPoint);
+                    investigationPointChosen = true;
+                }
+                else
+                {
+                    Debug.Log("HELP");
+                    Debug.Log(walkPoint);
+                }
             }
-            else
+            else // When a point is chosen, walk towards it using the pathfinding
             {
-                Debug.Log("HELP");
-                Debug.Log(walkPoint);
+                
+                if (!_followingP)
+                {
+                    _pathfinding.FindPath(transform.position, walkPoint);
+                    StartCoroutine(FollowPath(_pathfinding.finalPath));
+                    Debug.Log("Moving to investigation target");
+                }
+                else
+                {
+                    EndInvestigation();
+                }
             }
         }
         else
         {
-            if (_investigationIndex < investigationPoints.Length)
-            {
-                MoveToWithPathFinding(ref investigationPoints, ref _investigationIndex);
-            }
-            else
-            {
-                EndInvestigation();
-            }
+            //StartChase();
         }
     }
     void Chasing()
@@ -235,7 +248,7 @@ public class NPC : MonoBehaviour
         RaycastHit raycastHit;
         if (Physics.Raycast(transform.position, dir, out raycastHit) && raycastHit.transform.CompareTag("Player"))
         {
-            Debug.Log(raycastHit.transform.name);
+            //Debug.Log(raycastHit.transform.name);
             if (Vector3.Angle(transform.forward, dir) < 60)
             {
                 _lastPos = looking;
@@ -281,16 +294,17 @@ public class NPC : MonoBehaviour
     private void MoveToWithPathFinding(ref Vector3[] points, ref int index)
     {
         MoveTo(points[index], 2f);
-        if (DistanceLessThan(0.35f, points[index]))
+        if (DistanceLessThan(0.4f, points[index]))
         {
             index++;
         }
     }
 
+    #region ChoosingInvestigationPoint
+    // Calculate a random point in front of the view of the NPC
+    // Choose a random direction and then choose a random point in the range
     private Vector3 GetInvestigationPoint()
-    {
-       // Calculate a random point in front of the view of the NPC
-       // Choose a random direction and then choose a random point in the range
+    {   
         Vector3 randomDirection = ChooseRandomDirection();
 
         return transform.position + randomDirection * Random.Range(_investigationMinDistance, _investigationMaxDistance);
@@ -303,6 +317,7 @@ public class NPC : MonoBehaviour
 
         return Quaternion.AngleAxis(randomAngle, Vector3.up) * transform.forward;
     }
+    #endregion
 
     protected bool DistanceLessThan(float distance, Vector3 target)
     {
@@ -366,7 +381,7 @@ public class NPC : MonoBehaviour
     private IEnumerator FollowPath(List<Node> path)
     {
         _followingP = true;
-        //EntendiLaReferencia(path);
+        EntendiLaReferencia(path);
         foreach (Node coord in path)
         {
             while (Vector3.Distance(coord.position, transform.position) > 0.8f)
@@ -374,16 +389,15 @@ public class NPC : MonoBehaviour
 //                Debug.Log("Moving to " + coord.position);
                 MoveTo(coord.position,1);
                 yield return new WaitForFixedUpdate();
-                if(!isChasing)break;
-                
+                //if(!endPath)break;
             }
-            if(!isChasing)break;
+            //if(!endPath)break;
         }
-        Debug.Log("Finished Follow Path");
+        //Debug.Log("Finished Follow Path");
         _followingP = false;
     }
 
-    /*private void EntendiLaReferencia(List<Node> path)
+    private void EntendiLaReferencia(List<Node> path)
     {
         references = new List<Transform>(path.Count);
         foreach (Node coord in path)
@@ -391,7 +405,7 @@ public class NPC : MonoBehaviour
             references.Add(Instantiate(reference));
             references[^1].position = coord.position;
         }
-    }*/
+    }
 
     public void goToComunicatedLocation(Vector3 position) //Comentar por si se podria usar la funcion chasing o otra que ya haga esto
     {
