@@ -23,6 +23,8 @@ public class NPC : MonoBehaviour
     private List<Node> toWaypoint;
     private int toWaypointIndex = 0;
 
+    private Coroutine patrollingPath;
+
     [SerializeField]
     private float movementSpeed;
     [SerializeField]
@@ -51,7 +53,7 @@ public class NPC : MonoBehaviour
     private Vector3[] investigationPoints;
     private int _investigationIndex = 0;
 
-    Coroutine investigationPath;
+    private Coroutine investigationPath;
 
 
     [FormerlySerializedAs("player")]
@@ -61,7 +63,6 @@ public class NPC : MonoBehaviour
     private bool _followingP;
     private Vector3 _lastPos;
     private float _dist;
-
     //private Queue<Vector3> _pendingPositions;
     //private Vector3 lastPos;
     [SerializeField] private GameEnding gameEnding;  
@@ -99,13 +100,19 @@ public class NPC : MonoBehaviour
     //Patrol --> Chase
     public void StartChase()
     {
+        if (!waypointReached)
+        {
+            Debug.Log("Stopping patrollingPath");
+            StopCoroutine(patrollingPath);
+        }
+
         Debug.Log("Start chase");
         _followingP = false;
         endPath = true;
         isPatrolling = false;
         isInvestigating = false;
         investigationPointChosen = false;
-        waypointReached = true;
+        waypointReached = false;
         isChasing = true;
     }
     
@@ -115,20 +122,23 @@ public class NPC : MonoBehaviour
         Debug.Log("End Chasing");
         Debug.Log("Investigating");
         isChasing = false;
+        StopAllCoroutines();
         isInvestigating = true;
     }
     
     //Investigation --> Patrol
     void EndInvestigation() // Only executed when NPC is bored
     {
+        StopCoroutine(investigationPath);
+
+        _followingP = false;
+        //endPath = true;
+
         isChasing = false;
         Debug.Log("Finished investigating");
         Debug.Log("Start Patrol");
 
         waypointReached = false;
-        toWaypointIndex = 0;
-        _pathfinding.FindPath(transform.position, walkPoint);
-        toWaypoint = _pathfinding.finalPath;
 
         investigationPointChosen = false;
         isInvestigating = false;
@@ -163,20 +173,22 @@ public class NPC : MonoBehaviour
         }
         else
         {
-            
-            if (toWaypointIndex < toWaypoint.Count)
+            if (!_followingP && !endPath)
             {
-                MoveToWithPathFinding(ref toWaypoint, ref toWaypointIndex);
+                Debug.Log("Preparing path");
+                _pathfinding.FindPath(transform.position, _waypoints[chosenWaypoint].position);
+                patrollingPath = StartCoroutine(FollowPath(_pathfinding.finalPath));
             }
-            else
+            else if (endPath)
             {
+                endPath = false;
                 waypointReached = true;
             }
             
         }
 
-        if(IsContact(_player.position))
-            StartChase();
+        if(IsContact(_player.position))  
+            StartChase();       
     }
 
     void Investigating()
@@ -186,18 +198,15 @@ public class NPC : MonoBehaviour
             if (!investigationPointChosen)    // WHEN INVESTIGATING CHOOSE A DIRECTION
             {
                 walkPoint = GetInvestigationPoint();
-                Debug.Log("MOVING TOWWARDS: " + walkPoint);
 
-                // Check if this random direction is valid
+                // Check if this random position is valid
                 if (Physics.Raycast(walkPoint, -transform.up, 2f, layerMaskForInvestigation))
                 {
-                    walkPoint = new Vector3(walkPoint.x, transform.position.y, walkPoint.z);
                     investigationPointChosen = true;
                 }
             }
             else // When a point is chosen, walk towards it using the pathfinding
-            {
-                
+            {          
                 if (!_followingP && !endPath) // followingP changes once following. endPath will change once it reached the end
                 {
                     _pathfinding.FindPath(transform.position, walkPoint);
@@ -207,7 +216,7 @@ public class NPC : MonoBehaviour
                 else if(endPath)
                 {
                     Debug.Log("Investigation path finished");
-                    endPath = false;
+                    endPath = false;                 
                     EndInvestigation();
                 }
             }
@@ -295,16 +304,6 @@ public class NPC : MonoBehaviour
         Rotate(target);
 
         rb.MovePosition(transform.position + (movementSpeed * Time.fixedDeltaTime * transform.forward));
-    }
-
-    private void MoveToWithPathFinding(ref List<Node> points, ref int index)
-    {
-        Vector3 position = points.ElementAt(index).position;
-        MoveTo(position , 2f);
-        if (DistanceLessThan(0.4f, position))
-        {
-            index++;
-        }
     }
 
     #region ChoosingInvestigationPoint
