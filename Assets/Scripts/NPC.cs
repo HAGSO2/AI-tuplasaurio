@@ -35,7 +35,6 @@ public class NPC : MonoBehaviour
     private float stoppedMaxTime;
 
     private Rigidbody rb;
-
     
     
     [Header("Investigation")]
@@ -142,8 +141,6 @@ public class NPC : MonoBehaviour
             Investigating();
         else if(isChasing)
             Chasing();
-        //Debug.Log(rb.velocity);
-        //Set_speed(new Vector3(20,0,20));
     }
 
 
@@ -173,10 +170,11 @@ public class NPC : MonoBehaviour
                 waypointReached = true;
             }
         }
+
         if(IsContact(_player.position))
             StartChase();
-
     }
+
     void Investigating()
     {
         if (!IsContact(_player.position))
