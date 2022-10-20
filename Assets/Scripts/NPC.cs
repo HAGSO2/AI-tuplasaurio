@@ -100,6 +100,8 @@ public class NPC : MonoBehaviour
     public void StartChase()
     {
         Debug.Log("Start chase");
+        _followingP = false;
+        endPath = true;
         isPatrolling = false;
         isInvestigating = false;
         investigationPointChosen = false;
@@ -179,21 +181,16 @@ public class NPC : MonoBehaviour
     {
         if (!IsContact(_player.position))
         {
-            
             if (!investigationPointChosen)    // WHEN INVESTIGATING CHOOSE A DIRECTION
             {
                 walkPoint = GetInvestigationPoint();
+                Debug.Log("MOVING TOWWARDS: " + walkPoint);
 
                 // Check if this random direction is valid
-                if (Physics.Raycast(walkPoint + Vector3.up, -transform.up, 20f, layerMaskForInvestigation))
+                if (Physics.Raycast(walkPoint, -transform.up, 2f, layerMaskForInvestigation))
                 {
-                    Debug.Log(walkPoint);
+                    walkPoint = new Vector3(walkPoint.x, transform.position.y, walkPoint.z);
                     investigationPointChosen = true;
-                }
-                else
-                {
-                    Debug.Log("HELP");
-                    Debug.Log(walkPoint);
                 }
             }
             else // When a point is chosen, walk towards it using the pathfinding
@@ -216,16 +213,18 @@ public class NPC : MonoBehaviour
         else
         {
             StopCoroutine(investigationPath);
+            Debug.Log("Was investigating, but saw the player");
             StartChase();
         }
     }
     void Chasing()
     {
+        Debug.Log("Chasing");
         if (IsContact(_player.position))
         {
             if (!_followingP)
             {
-                Debug.Log("Going to: " + _lastPos);
+                //Debug.Log("Going to: " + _lastPos);
                 _pathfinding.FindPath(transform.position, _lastPos);
                 StartCoroutine(FollowPath(_pathfinding.finalPath));
                 _lastPos = Vector3.up;
@@ -240,10 +239,8 @@ public class NPC : MonoBehaviour
         }
         if (!_followingP && _lastPos != Vector3.up )
         {
-            Debug.Log("Going to last: " + _lastPos);
-            _pathfinding.FindPath(
-                transform.position,
-                _lastPos);
+            //Debug.Log("Going to last: " + _lastPos);
+            _pathfinding.FindPath(transform.position, _lastPos);
             StartCoroutine(FollowPath(_pathfinding.finalPath));
             _lastPos = Vector3.up;
         }
