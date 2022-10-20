@@ -126,7 +126,8 @@ public class NPC : MonoBehaviour
 
         waypointReached = false;
         toWaypointIndex = 0;
-        toWaypoint = _pathfinding.FindPath(transform.position, _waypoints[chosenWaypoint].position);
+        _pathfinding.FindPath(transform.position, walkPoint);
+        toWaypoint = _pathfinding.finalPath
 
         investigationPointChosen = false;
         isInvestigating = false;
