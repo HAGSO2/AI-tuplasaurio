@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Serialization;
@@ -19,7 +20,7 @@ public class NPC : MonoBehaviour
     private Transform[] _waypoints;
     private int chosenWaypoint;
     private bool waypointReached = true;
-    private Vector3[] toWaypoint;
+    private List<Node> toWaypoint;
     private int toWaypointIndex = 0;
 
     [SerializeField]
@@ -56,7 +57,7 @@ public class NPC : MonoBehaviour
     [FormerlySerializedAs("player")]
     [Header("Chasing")] 
     [SerializeField] private Transform _player;
-    [SerializeField]private float _vel;
+    [SerializeField] private float _vel;
     private bool _followingP;
     private Vector3 _lastPos;
     private float _dist;
@@ -127,7 +128,7 @@ public class NPC : MonoBehaviour
         waypointReached = false;
         toWaypointIndex = 0;
         _pathfinding.FindPath(transform.position, walkPoint);
-        toWaypoint = _pathfinding.finalPath
+        toWaypoint = _pathfinding.finalPath;
 
         investigationPointChosen = false;
         isInvestigating = false;
@@ -162,7 +163,8 @@ public class NPC : MonoBehaviour
         }
         else
         {
-            if (toWaypointIndex < toWaypoint.Length)
+            
+            if (toWaypointIndex < toWaypoint.Count)
             {
                 MoveToWithPathFinding(ref toWaypoint, ref toWaypointIndex);
             }
@@ -170,6 +172,7 @@ public class NPC : MonoBehaviour
             {
                 waypointReached = true;
             }
+            
         }
 
         if(IsContact(_player.position))
@@ -291,13 +294,14 @@ public class NPC : MonoBehaviour
 
         Rotate(target);
 
-        rb.MovePosition(transform.position + transform.forward * Time.fixedDeltaTime * movementSpeed);
+        rb.MovePosition(transform.position + (movementSpeed * Time.fixedDeltaTime * transform.forward));
     }
 
-    private void MoveToWithPathFinding(ref Vector3[] points, ref int index)
+    private void MoveToWithPathFinding(ref List<Node> points, ref int index)
     {
-        MoveTo(points[index], 2f);
-        if (DistanceLessThan(0.4f, points[index]))
+        Vector3 position = points.ElementAt(index).position;
+        MoveTo(position , 2f);
+        if (DistanceLessThan(0.4f, position))
         {
             index++;
         }
