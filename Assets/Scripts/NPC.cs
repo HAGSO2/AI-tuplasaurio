@@ -223,7 +223,8 @@ public class NPC : MonoBehaviour
         }
         else
         {
-            Debug.Log("I've lossen the playar");
+            //Debug.Log("I've lost the player");
+            //LostPlayer();
         }
     }
 
@@ -368,10 +369,12 @@ public class NPC : MonoBehaviour
         {
             while (Vector3.Distance(coord.position, transform.position) > 0.8f)
             {
+                Debug.Log("Moving to " + coord.position);
                 MoveTo(coord.position,1);
                 yield return new WaitForFixedUpdate();
             }
         }
+        Debug.Log("Finished Follow Path");
         _followingP = false;
     }
 
