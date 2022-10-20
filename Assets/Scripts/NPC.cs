@@ -212,21 +212,20 @@ public class NPC : MonoBehaviour
                 _lastPos = Vector3.up;
             }
         }
-        else if (!_followingP && _lastPos != Vector3.up)
+
+        if (_lastPos == Vector3.up && !_followingP)
         {
-            Debug.Log("Going to: " + _lastPos);
+            LostPlayer();
+            return;
+        }
+        if (!_followingP && _lastPos != Vector3.up )
+        {
+            Debug.Log("Going to last: " + _lastPos);
             _pathfinding.FindPath(
                 transform.position,
                 _lastPos);
             StartCoroutine(FollowPath(_pathfinding.finalPath));
             _lastPos = Vector3.up;
-        }
-        else
-        {
-            // This part gets called every frame, conditions are not working properly
-
-            //Debug.Log("I've lost the player");
-            //LostPlayer();
         }
     }
 
@@ -236,6 +235,7 @@ public class NPC : MonoBehaviour
         RaycastHit raycastHit;
         if (Physics.Raycast(transform.position, dir, out raycastHit) && raycastHit.transform.CompareTag("Player"))
         {
+            Debug.Log(raycastHit.transform.name);
             if (Vector3.Angle(transform.forward, dir) < 60)
             {
                 _lastPos = looking;
@@ -366,21 +366,24 @@ public class NPC : MonoBehaviour
     private IEnumerator FollowPath(List<Node> path)
     {
         _followingP = true;
-        EntendiLaReferencia(path);
+        //EntendiLaReferencia(path);
         foreach (Node coord in path)
         {
             while (Vector3.Distance(coord.position, transform.position) > 0.8f)
             {
-                Debug.Log("Moving to " + coord.position);
+//                Debug.Log("Moving to " + coord.position);
                 MoveTo(coord.position,1);
                 yield return new WaitForFixedUpdate();
+                if(!isChasing)break;
+                
             }
+            if(!isChasing)break;
         }
         Debug.Log("Finished Follow Path");
         _followingP = false;
     }
 
-    private void EntendiLaReferencia(List<Node> path)
+    /*private void EntendiLaReferencia(List<Node> path)
     {
         references = new List<Transform>(path.Count);
         foreach (Node coord in path)
@@ -388,7 +391,7 @@ public class NPC : MonoBehaviour
             references.Add(Instantiate(reference));
             references[^1].position = coord.position;
         }
-    }
+    }*/
 
     public void goToComunicatedLocation(Vector3 position) //Comentar por si se podria usar la funcion chasing o otra que ya haga esto
     {
