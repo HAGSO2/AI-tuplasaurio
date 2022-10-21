@@ -145,6 +145,11 @@ public class NPC : MonoBehaviour
         isPatrolling = true;
     }
 
+    protected void Update()
+    {
+        //Check if NPC is frozen
+    }
+
     protected void FixedUpdate()
     {
         if(isPatrolling)
@@ -225,12 +230,15 @@ public class NPC : MonoBehaviour
         {
             StopCoroutine(investigationPath);
             Debug.Log("Was investigating, but saw the player");
+            waypointReached = true;
             StartChase();
         }
     }
     void Chasing()
     {
         Debug.Log("Chasing");
+        Debug.Log("Follow" + _followingP);
+        Debug.Log("lastPos" + endPath);
         if (IsContact(_player.position))
         {
             if (!_followingP)
