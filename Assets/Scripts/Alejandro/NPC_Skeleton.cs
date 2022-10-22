@@ -8,8 +8,6 @@ public class NPC_Skeleton : NPC
 {
     private Animator _animator;
     
-    
-
     new void Start()
     {
         base.Start();
@@ -23,7 +21,6 @@ public class NPC_Skeleton : NPC
         base.OnTriggerEnter(other);
         if (other.CompareTag("PlayerNoise"))
         {
-            
             //pathfinding.target = other.GameObject();
             _animator.SetBool("isAttacking", true);
             _manager.ComunicatePlayerLocation(other.transform.position);

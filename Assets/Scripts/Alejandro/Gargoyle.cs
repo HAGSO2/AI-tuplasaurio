@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class Gargoyle : MonoBehaviour
 {
+    [SerializeField] protected EnemiesManager _manager;
+    
     private BoxCollider _vision;
     private Animator _animator;
     private void Start()
@@ -18,8 +20,7 @@ public class Gargoyle : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            //Avisar NPC's
-            Debug.Log("Seen");
+            _manager.ComunicatePlayerLocation(other.transform.position);
         }
     }
 
