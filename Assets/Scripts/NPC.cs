@@ -21,7 +21,6 @@ public class NPC : MonoBehaviour
     private int chosenWaypoint;
     private bool waypointReached = true;
     private List<Node> toWaypoint;
-    private int toWaypointIndex = 0;
 
     private Coroutine patrollingPath;
 
@@ -51,7 +50,6 @@ public class NPC : MonoBehaviour
     private bool investigationPointChosen = false;
     private Vector3 walkPoint;
     private Vector3[] investigationPoints;
-    private int _investigationIndex = 0;
 
     private Coroutine investigationPath;
 
@@ -95,6 +93,54 @@ public class NPC : MonoBehaviour
 
         _waypoints[chosenWaypoint].gameObject.SetActive(true);
         _lastPos = Vector3.up;
+    }
+
+    private float isFrozenTimer1 = 0;
+    private float isFrozenTimer2 = 0;
+    private float isFrozenFirstStop = 1f;
+    private float isFrozenSecondStop = 2f;
+    private Vector3 previousPosition;
+
+    protected void Update()
+    {
+        //Check if NPC is frozen
+        isFrozenTimer1 += Time.deltaTime;
+        isFrozenTimer2 += Time.deltaTime;
+        if (isFrozenTimer1 >= isFrozenFirstStop && isFrozenTimer2 <= isFrozenFirstStop)
+        {
+            isFrozenTimer1 = 0;
+            previousPosition = transform.position;
+        }
+        else if (isFrozenTimer2 >= isFrozenSecondStop)
+        {
+            isFrozenTimer2 = 0;
+            if (DistanceLessThan(0.4f, previousPosition) && !stopped)
+            {
+                Reset();
+            }
+        }
+    }
+
+    protected void FixedUpdate()
+    {
+        if (isPatrolling)
+            Patrolling();
+        else if (isInvestigating)
+            Investigating();
+        else if (isChasing)
+            Chasing();
+    }
+
+    private void Reset()
+    {
+        StopAllCoroutines();
+        _followingP = false;
+        //endPath = true;
+        isInvestigating = false;
+        isChasing = false;
+        waypointReached = false;
+        investigationPointChosen = false;
+        isPatrolling = true;
     }
 
     //Patrol --> Chase
@@ -144,22 +190,6 @@ public class NPC : MonoBehaviour
         isInvestigating = false;
         isPatrolling = true;
     }
-
-    protected void Update()
-    {
-        //Check if NPC is frozen
-    }
-
-    protected void FixedUpdate()
-    {
-        if(isPatrolling)
-            Patrolling();
-        else if(isInvestigating)
-            Investigating();
-        else if(isChasing)
-            Chasing();
-    }
-
 
     private void Patrolling()
     {
