@@ -28,12 +28,12 @@ public class EnemiesManager : MonoBehaviour
             _comparableEnemies.Add(e);
         }
 
-        FindXClosestEnemies(3);
+        FindXClosestEnemies(3, playerPosition);
         
-        StartCoroutine(GoToLv2Seek(10));
+        StartCoroutine(GoToLv2Seek(10, playerPosition));
     }
 
-    private void FindXClosestEnemies(int x)
+    private void FindXClosestEnemies(int x, Vector3 playerPosition)
     {
         
         Debug.Log("__________________________________________________________________________________________________________________");
@@ -45,17 +45,17 @@ public class EnemiesManager : MonoBehaviour
         {
             
             Debug.Log("Enemy: " + i + " -> " + _comparableEnemies[i].Enemy.name + "\n" + "Distance: " + _comparableEnemies[i].Distance);
-            //_comparableEnemies[i].Enemy.goToComunicatedLocation(playerPosition);
+            _comparableEnemies[i].Enemy.goToComunicatedLocation(playerPosition);
         }
         
         Debug.Log("__________________________________________________________________________________________________________________");
     }
 
-    private IEnumerator GoToLv2Seek(int seconds)
+    private IEnumerator GoToLv2Seek(int seconds, Vector3 playerPosition)
     {
         yield return new WaitForSeconds(seconds);
         
-        FindXClosestEnemies(6);
+        FindXClosestEnemies(6, playerPosition);
     }
 
 }
