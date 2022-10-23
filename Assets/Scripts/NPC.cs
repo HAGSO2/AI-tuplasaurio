@@ -432,6 +432,17 @@ public class NPC : MonoBehaviour
 
     public void goToComunicatedLocation(Vector3 position) //Comentar por si se podria usar la funcion chasing o otra que ya haga esto
     {
+        if (!isChasing)
+        {
+            investigationPointChosen = true;
+            walkPoint = position;
+            isPatrolling = false;
+            waypointReached = false;
+            StopAllCoroutines();
+            isInvestigating = true;
+        }
+
+        
         //Vector3[] path = 
         //_pathfinding.FindPath(transform.position, position);
         //StartCoroutine(FollowPath(_pathfinding.finalPath));
