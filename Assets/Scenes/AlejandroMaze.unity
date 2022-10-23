@@ -2405,7 +2405,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a67ba7dfe36b12c49b1497aaa3a485e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  EnableAlternativePath: 1
+  EnableAlternativePath: 0
   targetPos: {fileID: 1894281941}
 --- !u!1001 &87441844
 PrefabInstance:
@@ -38496,7 +38496,7 @@ MonoBehaviour:
     m_Bits: 64
   AtravesableWallMask:
     serializedVersion: 2
-    m_Bits: 0
+    m_Bits: 512
   gridWorldSize: {x: 35.5, y: 50.6}
   nodeRadius: 0.5
   distance: 0
@@ -44922,8 +44922,16 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7409694983480046951, guid: ec7cf8572e3aff546af9e27e22721dd3, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 7409694983480046951, guid: ec7cf8572e3aff546af9e27e22721dd3, type: 3}
       propertyPath: m_LocalPosition.y
       value: -1.52
+      objectReference: {fileID: 0}
+    - target: {fileID: 7409694983480046951, guid: ec7cf8572e3aff546af9e27e22721dd3, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 8064617992926990964, guid: ec7cf8572e3aff546af9e27e22721dd3, type: 3}
       propertyPath: m_Constraints
