@@ -7,6 +7,7 @@ using UnityEngine;
 public class NPC_Skeleton : NPC
 {
     private Animator _animator;
+    private bool isContact = false;
     
     new void Start()
     {
@@ -15,7 +16,10 @@ public class NPC_Skeleton : NPC
         _animator.SetBool("isAttacking", false);
     }
 
-
+    protected override bool IsContact(Vector3 looking) // Returns true if the NPC can hear the player (a sphere collider)
+    {
+        return isContact;
+    }
     protected override void OnTriggerEnter(Collider other)
     {
         base.OnTriggerEnter(other);
@@ -24,6 +28,7 @@ public class NPC_Skeleton : NPC
             //pathfinding.target = other.GameObject();
             _animator.SetBool("isAttacking", true);
             _manager.ComunicatePlayerLocation(other.transform.position);
+            isContact = true;
         }
     }
     
@@ -32,6 +37,7 @@ public class NPC_Skeleton : NPC
         if (other.CompareTag("PlayerNoise"))
         {
             _animator.SetBool("isAttacking", false);
+            isContact = false;
         }
     }
 

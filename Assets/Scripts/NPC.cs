@@ -58,10 +58,8 @@ public class NPC : MonoBehaviour
     [Header("Chasing")] 
     [SerializeField] private Transform _player;
     [SerializeField] private float _vel;
-    [SerializeField] private float maxDistanceView;
-    [SerializeField] private float angleView;
     private bool _followingP;
-    private Vector3 _lastPos;
+    protected Vector3 _lastPos;
     private float _dist;
     //private Queue<Vector3> _pendingPositions;
     //private Vector3 lastPos;
@@ -75,8 +73,6 @@ public class NPC : MonoBehaviour
 
     protected void Start()
     {
-        maxDistanceView = 10f;
-        angleView = 15f;
 
         _pathfinding = GetComponent<Pathfinding>();
         _followingP = false;
@@ -300,19 +296,10 @@ public class NPC : MonoBehaviour
         }
     }
 
-    protected bool IsContact(Vector3 looking) //Returns true if the NPC can see the poitn at a max distance
+    // Condition for chasing the player (checked during patrol, investigation and chasing)
+    // The function should be overriden by the skeleton (blind) and ghost (deaf)
+    protected virtual bool IsContact(Vector3 looking) 
     {
-        Vector3 dir = looking - transform.position;
-        RaycastHit raycastHit;
-        if (Physics.Raycast(transform.position, dir, out raycastHit, maxDistanceView) && raycastHit.transform.CompareTag("Player"))
-        {
-            //Debug.Log(raycastHit.transform.name);
-            if (Vector3.Angle(transform.forward, dir) < angleView)
-            {
-                _lastPos = looking;
-                return true;
-            }
-        }
         return false;
     }
 
