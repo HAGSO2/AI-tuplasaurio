@@ -58,6 +58,8 @@ public class NPC : MonoBehaviour
     [Header("Chasing")] 
     [SerializeField] private Transform _player;
     [SerializeField] private float _vel;
+    [SerializeField] private float maxDistanceView;
+    [SerializeField] private float angleView;
     private bool _followingP;
     private Vector3 _lastPos;
     private float _dist;
@@ -73,6 +75,9 @@ public class NPC : MonoBehaviour
 
     protected void Start()
     {
+        maxDistanceView = 10f;
+        angleView = 15f;
+
         _pathfinding = GetComponent<Pathfinding>();
         _followingP = false;
         stoppedTimer = 0;
@@ -235,7 +240,7 @@ public class NPC : MonoBehaviour
                 walkPoint = GetInvestigationPoint();
 
                 // Check if this random position is valid
-                if (Physics.Raycast(walkPoint, -transform.up, 2f, layerMaskForInvestigation))
+                if (Physics.Raycast(walkPoint, -transform.up, 2f, layerMaskForInvestigation) && !DistanceLessThan(0.5f, walkPoint))
                 {
                     investigationPointChosen = true;
                 }
@@ -299,10 +304,10 @@ public class NPC : MonoBehaviour
     {
         Vector3 dir = looking - transform.position;
         RaycastHit raycastHit;
-        if (Physics.Raycast(transform.position, dir, out raycastHit) && raycastHit.transform.CompareTag("Player"))
+        if (Physics.Raycast(transform.position, dir, out raycastHit, maxDistanceView) && raycastHit.transform.CompareTag("Player"))
         {
             //Debug.Log(raycastHit.transform.name);
-            if (Vector3.Angle(transform.forward, dir) < 60)
+            if (Vector3.Angle(transform.forward, dir) < angleView)
             {
                 _lastPos = looking;
                 return true;
@@ -310,24 +315,6 @@ public class NPC : MonoBehaviour
         }
         return false;
     }
-    /*private void set_speed(Vector3 runnigAt)//if stop == true will stop on the point is running, if not, will not stop
-    {
-        //Changes speed direction to go to the runningPoint
-        runnigAt.y = transform.position.y;
-        Vector3 position = transform.position;
-        Vector3 desired = runnigAt - position;
-        Vector3 steering = desired - rb.velocity;
-        Debug.DrawRay(position,desired,Color.blue);
-        Debug.DrawRay(position,steering.normalized * _vel,Color.red);
-        if (Vector3.Angle(desired, steering) < 30 && Vector3.Distance(runnigAt,position) > 1)
-        {
-            rb.AddForce(-steering.normalized * _vel);
-            //_movDir = steering.normalized;
-        }
-        else if(rb.velocity.magnitude < 5)
-            rb.AddForce(-desired.normalized * _vel);
-
-    }*/
 
     protected void MoveTo(Vector3 target, float minSpeed)
     {
@@ -415,6 +402,9 @@ public class NPC : MonoBehaviour
         Vector3 minimumDirection = Quaternion.AngleAxis(-_viewRange / 2, Vector3.up) * transform.forward;
         Vector3 maximumDirection = Quaternion.AngleAxis(_viewRange / 2, Vector3.up) * transform.forward;
 
+        Gizmos.DrawRay(transform.position, _player.position - transform.position);
+        Gizmos.color = Color.magenta;
+        //Physics.Raycast(transform.position, dir, out raycastHit)
         Gizmos.color = Color.cyan;
         Gizmos.DrawRay(transform.position + (minimumDirection * _investigationMinDistance), minimumDirection * _investigationMaxDistance);
 
