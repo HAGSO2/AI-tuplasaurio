@@ -5,7 +5,7 @@ using UnityEngine;
 public class NPC_Ghost : NPC
 {
 
-    [SerializeField] private float maxDistanceView = 5f;
+    [SerializeField] private float maxDistanceView = 3f;
     [SerializeField] private float angleView = 15f;
 
     protected override bool IsContact(Vector3 looking) //Returns true if the NPC can see the poitn at a max distance
