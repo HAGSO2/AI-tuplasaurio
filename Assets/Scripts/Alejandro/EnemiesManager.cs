@@ -7,6 +7,7 @@ public class EnemiesManager : MonoBehaviour
 {
     private NPC[] _enemies;
     private List<EnemyComparer> _comparableEnemies = new();
+    private int _timesSeen = 0;
     void Start()
     {
         _enemies = gameObject.transform.GetComponentsInChildren<NPC>();
@@ -15,10 +16,10 @@ public class EnemiesManager : MonoBehaviour
 
     public void ComunicatePlayerLocation(Vector3 playerPosition)
     {
-        
+        _comparableEnemies = new List<EnemyComparer>();
         foreach (NPC enemy in _enemies)
         {
-            enemy._pathfinding.FindPath(enemy.transform.position, playerPosition);
+            //enemy._pathfinding.FindPath(enemy.transform.position, playerPosition);
             var distance = enemy._pathfinding.finalPath.Count;
             var e = new EnemyComparer
             {
@@ -27,10 +28,10 @@ public class EnemiesManager : MonoBehaviour
             };
             _comparableEnemies.Add(e);
         }
-
-        FindXClosestEnemies(2, playerPosition);
+        _timesSeen += 1;
+        Debug.Log("Times Seen player: " + _timesSeen);
         
-        //StartCoroutine(GoToLv2Seek(5, playerPosition));
+        FindXClosestEnemies(_timesSeen/2, playerPosition);
     }
 
     private void FindXClosestEnemies(int x, Vector3 playerPosition)
@@ -38,7 +39,7 @@ public class EnemiesManager : MonoBehaviour
         
         Debug.Log("__________________________________________________________________________________________________________________");
         Debug.Log("Total Enemies: " + _enemies.Length);
-        x %= _enemies.Length + 1;
+        if (x > _enemies.Length) x = _enemies.Length;
         Debug.Log("Enemies after you: " + x);
         _comparableEnemies.Sort();
         for (int i = 0; i < x; i++)
@@ -47,17 +48,8 @@ public class EnemiesManager : MonoBehaviour
             Debug.Log("Enemy: " + i + " -> " + _comparableEnemies[i].Enemy.name + "\n" + "Distance: " + _comparableEnemies[i].Distance);
             _comparableEnemies[i].Enemy.goToComunicatedLocation(playerPosition);
         }
-        
-        Debug.Log("__________________________________________________________________________________________________________________");
     }
-
-    private IEnumerator GoToLv2Seek(int seconds, Vector3 playerPosition)
-    {
-        yield return new WaitForSeconds(seconds);
-
-        Debug.Log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-        FindXClosestEnemies(2, playerPosition);
-    }
+    
 
 }
 

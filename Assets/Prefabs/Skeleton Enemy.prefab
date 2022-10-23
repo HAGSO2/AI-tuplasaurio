@@ -2142,7 +2142,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f019839117839924cb3c505be3102e6e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _pathfinding: {fileID: 0}
+  _pathfinding: {fileID: 2150351842694845401}
   reference: {fileID: 0}
   _manager: {fileID: 0}
   waypointContainer: {fileID: 2105091332}
