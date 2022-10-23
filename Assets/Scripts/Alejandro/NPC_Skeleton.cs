@@ -27,7 +27,7 @@ public class NPC_Skeleton : NPC
         {
             //pathfinding.target = other.GameObject();
             _animator.SetBool("isAttacking", true);
-            _manager.ComunicatePlayerLocation(other.transform.position);
+            //_manager.ComunicatePlayerLocation(other.transform.position);
             isContact = true;
         }
     }

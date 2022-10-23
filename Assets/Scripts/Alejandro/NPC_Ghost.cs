@@ -17,7 +17,7 @@ public class NPC_Ghost : NPC
             if (Physics.Raycast(transform.position, dir, out raycastHit, maxDistanceView) && raycastHit.transform.CompareTag("Player"))
             {
                 Debug.Log("He visto al jugador");
-                _manager.ComunicatePlayerLocation(raycastHit.transform.position);
+                //_manager.ComunicatePlayerLocation(raycastHit.transform.position);
                 base._lastPos = looking;
                 return true;
             }
