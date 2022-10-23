@@ -150,7 +150,8 @@ public class NPC : MonoBehaviour
         if (!waypointReached)
         {
             Debug.Log("Stopping patrollingPath");
-            StopCoroutine(patrollingPath);
+            StopAllCoroutines();
+            //StopCoroutine(patrollingPath);
         }
 
         Debug.Log("Start chase");
@@ -176,7 +177,8 @@ public class NPC : MonoBehaviour
     //Investigation --> Patrol
     void EndInvestigation() // Only executed when NPC is bored
     {
-        StopCoroutine(investigationPath);
+        StopAllCoroutines();
+        //StopCoroutine(investigationPath);
 
         _followingP = false;
         //endPath = true;
@@ -259,7 +261,8 @@ public class NPC : MonoBehaviour
         }
         else
         {
-            StopCoroutine(investigationPath);
+            StopAllCoroutines();
+            //StopCoroutine(investigationPath);
             Debug.Log("Was investigating, but saw the player");
             waypointReached = true;
             StartChase();
@@ -438,14 +441,10 @@ public class NPC : MonoBehaviour
             walkPoint = position;
             isPatrolling = false;
             waypointReached = false;
+            //_followingP = false;
+            //endPath = true;
             StopAllCoroutines();
             isInvestigating = true;
         }
-
-        
-        //Vector3[] path = 
-        //_pathfinding.FindPath(transform.position, position);
-        //StartCoroutine(FollowPath(_pathfinding.finalPath));
     }
-    
 }

@@ -28,9 +28,9 @@ public class EnemiesManager : MonoBehaviour
             _comparableEnemies.Add(e);
         }
 
-        FindXClosestEnemies(3, playerPosition);
+        FindXClosestEnemies(2, playerPosition);
         
-        StartCoroutine(GoToLv2Seek(10, playerPosition));
+        //StartCoroutine(GoToLv2Seek(5, playerPosition));
     }
 
     private void FindXClosestEnemies(int x, Vector3 playerPosition)
@@ -54,8 +54,9 @@ public class EnemiesManager : MonoBehaviour
     private IEnumerator GoToLv2Seek(int seconds, Vector3 playerPosition)
     {
         yield return new WaitForSeconds(seconds);
-        
-        FindXClosestEnemies(6, playerPosition);
+
+        Debug.Log("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+        FindXClosestEnemies(2, playerPosition);
     }
 
 }
