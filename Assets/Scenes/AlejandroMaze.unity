@@ -25760,7 +25760,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1066477604822881618, guid: 20acd1a474e02a14a86e818545d603ea, type: 3}
       propertyPath: m_Radius
-      value: 0.2
+      value: 0.4
       objectReference: {fileID: 0}
     - target: {fileID: 2503503212010772115, guid: 20acd1a474e02a14a86e818545d603ea, type: 3}
       propertyPath: _noise

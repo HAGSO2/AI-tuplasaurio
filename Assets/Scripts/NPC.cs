@@ -240,7 +240,7 @@ public class NPC : MonoBehaviour
                 walkPoint = GetInvestigationPoint();
 
                 // Check if this random position is valid
-                if (Physics.Raycast(walkPoint, -transform.up, 2f, layerMaskForInvestigation) && !DistanceLessThan(0.5f, walkPoint))
+                if (Physics.Raycast(walkPoint, -transform.up, 2f, layerMaskForInvestigation) && Vector3.Distance(transform.position, _player.position) > 1f)
                 {
                     investigationPointChosen = true;
                 }
