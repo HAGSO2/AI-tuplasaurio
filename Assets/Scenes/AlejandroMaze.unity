@@ -19002,7 +19002,7 @@ Camera:
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 1015
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -23779,7 +23779,7 @@ GameObject:
   - component: {fileID: 1157938066}
   - component: {fileID: 1157938065}
   - component: {fileID: 1157938064}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Sphere
   m_TagString: Untagged
   m_Icon: {fileID: 0}
