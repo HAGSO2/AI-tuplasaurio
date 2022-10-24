@@ -7,7 +7,7 @@ public class InvestigationBehaviour : MonoBehaviour
     [Tooltip("Choose view range")]
     [SerializeField] float viewRange = 40;
     [SerializeField] float maximumDistanceCheck = 5;
-    [SerializeField] float speed = 10f;
+    //[SerializeField] float speed = 10f;
     [SerializeField] float turnSpeed = 10f;
 
     [Tooltip("Select the layer you want the NPC to avoid")]
