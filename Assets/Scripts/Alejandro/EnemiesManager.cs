@@ -29,7 +29,7 @@ public class EnemiesManager : MonoBehaviour
             _comparableEnemies.Add(e);
         }
         _timesSeen += 1;
-        Debug.Log("Times Seen player: " + _timesSeen);
+        //Debug.Log("Times Seen player: " + _timesSeen);
         
         if (_timesSeen == 1)
             FindXClosestEnemies(_timesSeen , playerPosition);
@@ -40,15 +40,15 @@ public class EnemiesManager : MonoBehaviour
     private void FindXClosestEnemies(int x, Vector3 playerPosition)
     {
         
-        Debug.Log("__________________________________________________________________________________________________________________");
-        Debug.Log("Total Enemies: " + _enemies.Length);
+        //Debug.Log("__________________________________________________________________________________________________________________");
+        //Debug.Log("Total Enemies: " + _enemies.Length);
         if (x > _enemies.Length) x = _enemies.Length;
-        Debug.Log("Enemies after you: " + x);
+        //Debug.Log("Enemies after you: " + x);
         _comparableEnemies.Sort();
         for (int i = 0; i < x; i++)
         {
             
-            Debug.Log("Enemy: " + i + " -> " + _comparableEnemies[i].Enemy.name + "\n" + "Distance: " + _comparableEnemies[i].Distance);
+            //Debug.Log("Enemy: " + i + " -> " + _comparableEnemies[i].Enemy.name + "\n" + "Distance: " + _comparableEnemies[i].Distance);
             _comparableEnemies[i].Enemy.goToComunicatedLocation(playerPosition);
         }
     }
