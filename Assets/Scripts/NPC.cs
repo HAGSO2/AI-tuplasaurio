@@ -439,15 +439,16 @@ public class NPC : MonoBehaviour
 
     public void goToComunicatedLocation(Vector3 position) //Comentar por si se podria usar la funcion chasing o otra que ya haga esto
     {
-        if (!isChasing)
+        if (!isChasing && !isInvestigating)
         {
-            investigationPointChosen = true;
-            walkPoint = position;
+            Debug.Log("A");
             isPatrolling = false;
             waypointReached = false;
-            //_followingP = false;
-            //endPath = true;
             StopAllCoroutines();
+            _followingP = false;
+            //endPath = true;
+            investigationPointChosen = true;
+            walkPoint = position;
             isInvestigating = true;
         }
     }

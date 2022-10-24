@@ -31,7 +31,10 @@ public class EnemiesManager : MonoBehaviour
         _timesSeen += 1;
         Debug.Log("Times Seen player: " + _timesSeen);
         
-        FindXClosestEnemies(_timesSeen/2, playerPosition);
+        if (_timesSeen == 1)
+            FindXClosestEnemies(_timesSeen , playerPosition);
+        else 
+            FindXClosestEnemies(_timesSeen/2, playerPosition);
     }
 
     private void FindXClosestEnemies(int x, Vector3 playerPosition)
