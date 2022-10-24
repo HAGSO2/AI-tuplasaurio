@@ -200,7 +200,7 @@ public class NPC : MonoBehaviour
         {
             if (!stopped)
             {
-                MoveTo(_waypoints[chosenWaypoint].position, 1f);
+                PatrolMoveTo(_waypoints[chosenWaypoint].position, 1.5f);
             }
             else
             {
@@ -306,15 +306,19 @@ public class NPC : MonoBehaviour
         return false;
     }
 
-    protected void MoveTo(Vector3 target, float minSpeed)
+    protected void MoveTo(Vector3 target)
     {
-        if (!isChasing)
-        {
-            if (DistanceLessThan(0.75f, target))
-                movementSpeed = minSpeed;
-            else
-                movementSpeed = 2;
-        }
+        Rotate(target);
+
+        rb.MovePosition(transform.position + (movementSpeed * Time.fixedDeltaTime * transform.forward));
+    }
+
+    protected void PatrolMoveTo(Vector3 target, float minSpeed)
+    {
+        if (DistanceLessThan(2f, target))
+            movementSpeed = minSpeed;
+        else
+            movementSpeed = 2;
 
         Rotate(target);
 
@@ -412,7 +416,7 @@ public class NPC : MonoBehaviour
             while (Vector3.Distance(coord.position, transform.position) > 0.8f)
             {
 //                Debug.Log("Moving to " + coord.position);
-                MoveTo(coord.position,1);
+                MoveTo(coord.position);
                 yield return new WaitForFixedUpdate();
                 //if(!endPath)break;
             }
