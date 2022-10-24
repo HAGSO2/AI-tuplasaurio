@@ -149,12 +149,12 @@ public class NPC : MonoBehaviour
     {
         if (!waypointReached)
         {
-            Debug.Log("Stopping patrollingPath");
+            //Debug.Log("Stopping patrollingPath");
             StopAllCoroutines();
             //StopCoroutine(patrollingPath);
         }
 
-        Debug.Log("Start chase");
+        //Debug.Log("Start chase");
         _followingP = false;
         endPath = true;
         isPatrolling = false;
@@ -167,8 +167,8 @@ public class NPC : MonoBehaviour
     //Chase --> investigation
     private void LostPlayer()
     {
-        Debug.Log("End Chasing");
-        Debug.Log("Investigating");
+        //Debug.Log("End Chasing");
+        //Debug.Log("Investigating");
         isChasing = false;
         StopAllCoroutines();
         isInvestigating = true;
@@ -184,8 +184,8 @@ public class NPC : MonoBehaviour
         //endPath = true;
 
         isChasing = false;
-        Debug.Log("Finished investigating");
-        Debug.Log("Start Patrol");
+        //Debug.Log("Finished investigating");
+        //Debug.Log("Start Patrol");
 
         waypointReached = false;
 
@@ -213,7 +213,7 @@ public class NPC : MonoBehaviour
         {
             if (!_followingP && !endPath)
             {
-                Debug.Log("Preparing path");
+                //Debug.Log("Preparing path");
                 _pathfinding.FindPath(transform.position, _waypoints[chosenWaypoint].position);
                 patrollingPath = StartCoroutine(FollowPath(_pathfinding.finalPath));
             }
@@ -249,11 +249,11 @@ public class NPC : MonoBehaviour
                 {
                     _pathfinding.FindPath(transform.position, walkPoint);
                     investigationPath = StartCoroutine(FollowPath(_pathfinding.finalPath));
-                    Debug.Log("Moving to investigation target");
+                    //Debug.Log("Moving to investigation target");
                 }
                 else if(endPath)
                 {
-                    Debug.Log("Investigation path finished");
+                    //Debug.Log("Investigation path finished");
                     endPath = false;                 
                     EndInvestigation();
                 }
@@ -263,16 +263,16 @@ public class NPC : MonoBehaviour
         {
             StopAllCoroutines();
             //StopCoroutine(investigationPath);
-            Debug.Log("Was investigating, but saw the player");
+            //Debug.Log("Was investigating, but saw the player");
             waypointReached = true;
             StartChase();
         }
     }
     void Chasing()
     {
-        Debug.Log("Chasing");
-        Debug.Log("Follow" + _followingP);
-        Debug.Log("lastPos" + endPath);
+        //Debug.Log("Chasing");
+        //Debug.Log("Follow" + _followingP);
+        //Debug.Log("lastPos" + endPath);
         if (IsContact(_player.position))
         {
             if (!_followingP)
@@ -336,7 +336,7 @@ public class NPC : MonoBehaviour
     }
     Vector3 ChooseRandomDirection()
     {
-        Debug.Log("Chosing direction...");
+        //Debug.Log("Chosing direction...");
 
         float randomAngle = Random.Range(-_viewRange / 2, _viewRange / 2);
 
@@ -422,7 +422,7 @@ public class NPC : MonoBehaviour
             }
             //if(!endPath)break;
         }
-        Debug.Log("Finished Follow Path");
+        //Debug.Log("Finished Follow Path");
         _followingP = false;
         endPath = true;
     }
