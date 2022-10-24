@@ -441,7 +441,6 @@ public class NPC : MonoBehaviour
     {
         if (!isChasing && !isInvestigating)
         {
-            Debug.Log("A");
             isPatrolling = false;
             waypointReached = false;
             StopAllCoroutines();
